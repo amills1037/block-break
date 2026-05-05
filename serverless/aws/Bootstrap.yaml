@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: |
+  Bootstrap resources that remain active 24/7
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: Domain name (e.g., example.com).
+    ConstraintDescription: Must be a valid DNS-compliant name.
+
+Resources:
+  NakedDomainS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Join ["-", ["cloudfront", !Join ["-", !Split [".", !Ref DomainName]]]]
+
+  WWWDomainS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Join [
+          "-",
+          ["cloudfront", "www", !Join ["-", !Split [".", !Ref DomainName]]],
+        ]
