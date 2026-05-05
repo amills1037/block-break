@@ -3,19 +3,27 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: |
   Bootstrap resources that remain active 24/7
 
+## list of parameters to enter when creating the stack
 Parameters:
   DomainName:
     Type: String
     Description: Domain name (e.g., example.com).
     ConstraintDescription: Must be a valid DNS-compliant name.
+  ## Would be convenient to get the hosted zone from the domain name
+  ## or the domain name from the hosted zone, but there does not seem to be a clean way to do that
+  DomainHostedZone:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route53 hosted zone id.
 
 Resources:
+  ## naked domain bucket used to redirect to www
   NakedDomainS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
         !Join ["-", ["cloudfront", !Join ["-", !Split [".", !Ref DomainName]]]]
 
+  ## www domain, hosts the static files
   WWWDomainS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -24,3 +32,12 @@ Resources:
           "-",
           ["cloudfront", "www", !Join ["-", !Split [".", !Ref DomainName]]],
         ]
+
+  WebCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref DomainHostedZone
