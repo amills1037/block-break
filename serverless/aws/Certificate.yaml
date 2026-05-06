@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: |
+  Certificate for CloudFront
+
+## list of parameters to enter when creating the stack
+Parameters:
+  DomainName:
+    Type: String
+    Description: Domain name (e.g., example.com).
+    ConstraintDescription: Must be a valid DNS-compliant name.
+  ## Would be convenient to get the hosted zone from the domain name
+  ## or the domain name from the hosted zone, but there does not seem to be a clean way to do that
+  DomainHostedZone:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route53 hosted zone id.
+
+Resources:
+  WebCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Join [".", ["www", !Ref DomainName]]
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref DomainHostedZone
+        - DomainName: !Join [".", ["www", !Ref DomainName]]
+          HostedZoneId: !Ref DomainHostedZone
+
+Outputs:
+  WebCertificateARN:
+    Description: Web certificate ARN
+    Value: !Ref WebCertificate
