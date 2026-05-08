@@ -27,6 +27,11 @@ Resources:
   ## naked domain bucket used to redirect to www
   ApexDomainS3Bucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      Guard:
+        SuppressedRules:
+          - S3_BUCKET_VERSIONING_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
     Properties:
       BucketName:
         !Join ["-", ["cloudfront", !Join ["-", !Split [".", !Ref DomainName]]]]
@@ -34,16 +39,31 @@ Resources:
         RedirectAllRequestsTo:
           HostName: !Join [".", ["www", !Ref DomainName]]
           Protocol: https
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   ## www domain, hosts the static files
   WWWDomainS3Bucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      Guard:
+        SuppressedRules:
+          - S3_BUCKET_VERSIONING_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
     Properties:
       BucketName:
         !Join [
           "-",
           ["cloudfront", "www", !Join ["-", !Split [".", !Ref DomainName]]],
         ]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   ApexDistribution:
     Type: AWS::CloudFront::Distribution
@@ -140,9 +160,19 @@ Resources:
   ## For code deployment
   CodeDeployS3Bucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      Guard:
+        SuppressedRules:
+          - S3_BUCKET_VERSIONING_ENABLED
+          - S3_BUCKET_LOGGING_ENABLED
     Properties:
       BucketName:
         !Join ["-", ["codedeploy", !Join ["-", !Split [".", !Ref DomainName]]]]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   GitHubOIDCProvider:
     Type: AWS::IAM::OIDCProvider
@@ -180,5 +210,5 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - s3:PutDocument
+              - s3:PutObject
             Resource: !GetAtt WWWDomainS3Bucket.Arn
