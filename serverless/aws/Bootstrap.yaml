@@ -23,6 +23,7 @@ Parameters:
     ## arn:aws:acm:us-east-1:743114209664:certificate/2d40b051-c672-43e1-9aa5-97a2d9b8ba48
 
 Resources:
+  ## For website
   ## naked domain bucket used to redirect to www
   ApexDomainS3Bucket:
     Type: AWS::S3::Bucket
@@ -135,3 +136,49 @@ Resources:
       ResourceRecords:
         - !GetAtt WWWDistribution.DomainName
       TTL: 300
+
+  ## For code deployment
+  CodeDeployS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Join ["-", ["codedeploy", !Join ["-", !Split [".", !Ref DomainName]]]]
+
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ## ThumbprintList: # is not needed because AWS uses a CA to verify the thumbprint
+
+  GitHubCodeDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Federated: !Ref GitHubOIDCProvider
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringLike:
+              "token.actions.githubusercontent.com:sub":
+                - repo:amills1037block-break:sandbox
+                - repo:amills1037block-break:production
+            StringEquals:
+              "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+
+  GitHubS3PutRolePolicy:
+    Type: AWS::IAM::RolePolicy
+    Properties:
+      RoleName: !Ref GitHubCodeDeployRole
+      PolicyName: GitHubS3PutRolePolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:PutDocument
+            Resource: !GetAtt WWWDomainS3Bucket.Arn
