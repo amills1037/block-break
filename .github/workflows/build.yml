@@ -37,5 +37,4 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload Artifact to s3
-        working-directory: ${{ env.applicationfolder }}/target
         run: aws s3 cp --recursive build/* s3://${{ vars.S3BUCKET }}/
