@@ -185,6 +185,7 @@ Resources:
   GitHubCodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: BootstrapGitHubCodeDeploy
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -194,9 +195,7 @@ Resources:
           Action: sts:AssumeRoleWithWebIdentity
           Condition:
             StringLike:
-              "token.actions.githubusercontent.com:sub":
-                - repo:amills1037block-break:sandbox
-                - repo:amills1037block-break:production
+              "token.actions.githubusercontent.com:sub": repo:amills1037/block-break:*
             StringEquals:
               "token.actions.githubusercontent.com:aud": sts.amazonaws.com
 
@@ -211,4 +210,4 @@ Resources:
           - Effect: Allow
             Action:
               - s3:PutObject
-            Resource: !GetAtt WWWDomainS3Bucket.Arn
+            Resource: !Join ["/", [!GetAtt WWWDomainS3Bucket.Arn, "*"]]
