@@ -1,8 +1,8 @@
 # block-break
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/amills1037/break-block/ci.yml)](https://github.com/amills1037/break-block/actions)
-[![License](https://img.shields.io/github/license/amills1037/break-block)](LICENSE)
-[![Version](https://img.shields.io/github/v/release/amills1037/break-block)](https://github.com/amills1037/break-block/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/amills1037/block-break/ci.yml)](https://github.com/amills1037/block-break/actions)
+[![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
+[![Version](https://img.shields.io/github/v/release/amills1037/block-break)](https://github.com/amills1037/block-break/releases)
 
 Showcase web and gpu software development resources using server and serverless infrastructures.
 
@@ -16,7 +16,7 @@ Showcase web and gpu software development resources using server and serverless 
 
 ## License
 
-This project is licensed under the [Apache License 2.0](/LICENSE).
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Credits
 
