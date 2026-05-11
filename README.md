@@ -8,11 +8,11 @@ Showcase web and gpu software development resources using server and serverless 
 
 ## Server
 
-   Docker compose
+- Docker compose
 
 ## Serverless
 
-   AWS Lambdas
+- AWS Lambdas
 
 ## License
 
@@ -20,4 +20,4 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Credits
 
-    Design, software development and infrastructure by Anthony Mills
+- Design, software development and infrastructure by Anthony Mills
