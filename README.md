@@ -1,6 +1,6 @@
 # block-break
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/amills1037/block-break/ci.yml)](https://github.com/amills1037/block-break/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/amills1037/block-break/build.yml)](https://github.com/amills1037/block-break/actions)
 [![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
 [![Version](https://img.shields.io/github/v/release/amills1037/block-break)](https://github.com/amills1037/block-break/releases)
 
