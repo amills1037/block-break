@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import path from "path";
 
 import { defineConfig } from "vite";
@@ -11,5 +12,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  test: {
+    globals: true, // Allows using describe, expect, etc. without importing
+    environment: "jsdom", // Simulates a browser environment
+    setupFiles: "./src/test/setup.ts", // Runs before each test
   },
 });
