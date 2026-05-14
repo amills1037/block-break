@@ -6,12 +6,33 @@
 
 Showcase web and gpu software development resources using server and serverless infrastructures.
 
+## Website
+
+https://www.blockbreak.ca
+
+## Client
+
+Interactive React app.  Uses WebSockets to connect to the backend servers.  Can connect to either server or serverless infrastructer.
+
+Resources:
+ - React 19.2
+ - Vite
+ - Vitest
+ - Testing Library
+
 ## Server
 
-- Docker compose
+Resources:
+ - Docker compose
+ - Spring framework
+ - GraphQL
+ - MongoDB
+ - MySQL
+ - PostgreSQL
 
 ## Serverless
 
+Resources:
 - AWS Lambdas
 
 ## License
@@ -20,4 +41,4 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Credits
 
-- Design, software development and infrastructure by Anthony Mills
+- Design, development and infrastructure by Anthony Mills
