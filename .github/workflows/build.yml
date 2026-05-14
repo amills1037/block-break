@@ -8,9 +8,39 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-website:
     environment:
-      name: Build
+      name: Website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./website
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24" # Specify your Node version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          role-session-name: GitHub-Action-Role
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Upload Artifact to s3
+        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/
+  build-client:
+    environment:
+      name: Client
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,4 +67,4 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload Artifact to s3
-        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/
+        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/client/
