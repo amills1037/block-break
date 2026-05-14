@@ -1,7 +1,7 @@
 function Header() {
   return (
     <header>
-      <h1>Block Break</h1>
+      <h1>Block Break - Client</h1>
     </header>
   );
 }
