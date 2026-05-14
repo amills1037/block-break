@@ -10,7 +10,7 @@ permissions:
 jobs:
   build-website:
     environment:
-      name: Website
+      name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,7 +40,7 @@ jobs:
         run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/
   build-client:
     environment:
-      name: Client
+      name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
