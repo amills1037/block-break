@@ -84,6 +84,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "corretto"
+          java-version: "25"
+          ## cache: 'maven' should look into this
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
