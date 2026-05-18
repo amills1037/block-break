@@ -21,6 +21,7 @@ Parameters:
     AllowedPattern: "^arn:aws:[a-z0-9-]+:[a-z0-9-]*:[0-9]{12}:.+"
     ConstraintDescription: "Must be a valid AWS ARN (e.g., arn:aws:s3:::my-bucket)."
     ## arn:aws:acm:us-east-1:743114209664:certificate/2d40b051-c672-43e1-9aa5-97a2d9b8ba48
+    ##Should look into this: Fn::GetStackOutput
 
 Resources:
   ## For website
@@ -211,3 +212,10 @@ Resources:
             Action:
               - s3:PutObject
             Resource: !Join ["/", [!GetAtt WWWDomainS3Bucket.Arn, "*"]]
+
+Outputs:
+  CodeDeployS3Bucket:
+    Description: Bucket to store code for lambdas
+    Value: !Ref CodeDeployS3Bucket
+    Export:
+      Name: CodeDeployS3Bucket
