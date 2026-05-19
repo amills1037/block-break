@@ -214,6 +214,14 @@ Resources:
             Resource:
               - !Join ["/", [!GetAtt WWWDomainS3Bucket.Arn, "*"]]
               - !Join ["/", [!GetAtt CodeDeployS3Bucket.Arn, "*"]]
+          - Effect: Allow
+            Action:
+              - lambda:GetFunctionConfiguration
+              - lambda:CreateFunction
+              - lambda:UpdateFunctionCode
+              - lambda:UpdateFunctionConfiguration
+              - lambda:PublishVersion
+            Resource: !Sub "arn:aws:lambda::${AWS::AccountId}:function/*"
 
 Outputs:
   CodeDeployS3Bucket:
