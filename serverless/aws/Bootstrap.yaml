@@ -211,7 +211,9 @@ Resources:
           - Effect: Allow
             Action:
               - s3:PutObject
-            Resource: !Join ["/", [!GetAtt WWWDomainS3Bucket.Arn, "*"]]
+            Resource:
+              - !Join ["/", [!GetAtt WWWDomainS3Bucket.Arn, "*"]]
+              - !Join ["/", [!GetAtt CodeDeployS3Bucket.Arn, "*"]]
 
 Outputs:
   CodeDeployS3Bucket:
