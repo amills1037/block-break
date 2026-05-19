@@ -100,8 +100,4 @@ jobs:
         run: aws s3 cp target/serverless-*.jar s3://${{ vars.CODE_DEPLOY_BUCKET }}/serverless/
 
       - name: Deploy to AWS Lambda
-        uses: aws-actions/aws-lambda-deploy@v1
-        with:
-          function-name: websocket-serverless-lambda
-          s3-bucket: ${{ vars.CODE_DEPLOY_BUCKET }}
-          s3-key: serverless/serverless-1.0-SNAPSHOT.jar
+        run: aws lambda update-function-code --function-name websocket-serverless-lambda --zip-file fileb://target/serverless-1.0-SNAPSHOT.jar
