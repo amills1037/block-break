@@ -35,6 +35,7 @@ Resources:
   ServerlessFunction:
     Type: AWS::Lambda::Function
     Properties:
+      FunctionName: websocket-serverless-lambda
       Handler: ca.blockbreak.serverless.App
       Code:
         S3Bucket: !ImportValue CodeDeployS3Bucket
