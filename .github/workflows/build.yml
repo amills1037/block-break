@@ -97,4 +97,4 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload Artifact to s3
-        run: aws s3 cp target/*.jar s3://${{ vars.CODE_DEPLOY_BUCKET }}/serverless/
+        run: aws s3 cp target/serverless-*.jar s3://${{ vars.CODE_DEPLOY_BUCKET }}/serverless/
