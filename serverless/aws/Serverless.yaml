@@ -45,9 +45,25 @@ Resources:
       Role: !GetAtt ServerlessLambdaRole.Arn
 
   ServerlessAPIGateway:
-    Type: "AWS::ApiGatewayV2::Api"
+    Type: AWS::ApiGatewayV2::Api
     Properties:
       Name: ServerlessWebSocket
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: $request.body.action
       ApiKeySelectionExpression: $request.header.x-api-key
+
+  ServerlessStatsDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ServerlessStatsDB
+      AttributeDefinitions:
+        - AttributeName: PlayerId
+          AttributeType: S
+        - AttributeName: StatName
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PlayerId
+          KeyType: HASH
+        - AttributeName: StatName
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
