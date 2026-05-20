@@ -5,12 +5,21 @@ Description: |
 
 ## list of parameters to enter when creating the stack
 Parameters:
+  Stack:
+    Description: Software Stack
+    Type: String
+    Default: Production
+    AllowedValues:
+      - Sandbox
+      - Production
+
   DomainName:
     Type: String
     Description: Domain name (e.g., example.com).
     ConstraintDescription: Must be a valid DNS-compliant name.
   ## Would be convenient to get the hosted zone from the domain name
   ## or the domain name from the hosted zone, but there does not seem to be a clean way to do that
+
   DomainHostedZone:
     Type: AWS::Route53::HostedZone::Id
     Description: Route53 hosted zone id.
@@ -22,6 +31,15 @@ Parameters:
     ConstraintDescription: "Must be a valid AWS ARN (e.g., arn:aws:s3:::my-bucket)."
     ## arn:aws:acm:us-east-1:743114209664:certificate/2d40b051-c672-43e1-9aa5-97a2d9b8ba48
     ##Should look into this: Fn::GetStackOutput
+
+Mappings:
+  RegionDirection:
+    us-east-1:
+      Direction: East
+    us-west-2:
+      Direction: West
+    ca-central-1:
+      Direction: Central
 
 Resources:
   ## For website
@@ -45,6 +63,11 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   ## www domain, hosts the static files
   WWWDomainS3Bucket:
@@ -65,6 +88,11 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   ApexDistribution:
     Type: AWS::CloudFront::Distribution
@@ -90,6 +118,11 @@ Resources:
           AcmCertificateArn: !Ref WebCertificate
           MinimumProtocolVersion: TLSv1.3_2025
           SslSupportMethod: sni-only
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   WWWDistributionOAC:
     Type: AWS::CloudFront::OriginAccessControl
@@ -122,6 +155,11 @@ Resources:
           AcmCertificateArn: !Ref WebCertificate
           MinimumProtocolVersion: TLSv1.3_2025
           SslSupportMethod: sni-only
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   WWWDomainS3BucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -174,6 +212,11 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   GitHubOIDCProvider:
     Type: AWS::IAM::OIDCProvider
@@ -182,6 +225,11 @@ Resources:
       ClientIdList:
         - sts.amazonaws.com
       ## ThumbprintList: # is not needed because AWS uses a CA to verify the thumbprint
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   GitHubCodeDeployRole:
     Type: AWS::IAM::Role
@@ -199,6 +247,11 @@ Resources:
               "token.actions.githubusercontent.com:sub": repo:amills1037/block-break:*
             StringEquals:
               "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   GitHubS3PutRolePolicy:
     Type: AWS::IAM::RolePolicy
@@ -217,7 +270,7 @@ Resources:
           - Effect: Allow
             Action:
               - lambda:UpdateFunctionCode
-            Resource: "arn:aws:lambda:::function:*"
+            Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*"
 
 Outputs:
   CodeDeployS3Bucket:

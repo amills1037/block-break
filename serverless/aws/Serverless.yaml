@@ -3,6 +3,24 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: |
   Serverless application resources
 
+Parameters:
+  Stack:
+    Description: Software Stack
+    Type: String
+    Default: Production
+    AllowedValues:
+      - Sandbox
+      - Production
+
+Mappings:
+  RegionDirection:
+    us-east-1:
+      Direction: East
+    us-west-2:
+      Direction: West
+    ca-central-1:
+      Direction: Central
+
 Resources:
   ServerlessLambdaRole:
     Type: AWS::IAM::Role
@@ -15,6 +33,11 @@ Resources:
           Principal:
             Service: "lambda.amazonaws.com"
           Action: "sts:AssumeRole"
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   ServerlessLambdaRolePolicy:
     Type: AWS::IAM::RolePolicy
@@ -43,6 +66,11 @@ Resources:
       Runtime: java25
       Timeout: 5
       Role: !GetAtt ServerlessLambdaRole.Arn
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   ServerlessAPIGateway:
     Type: AWS::ApiGatewayV2::Api
@@ -51,6 +79,9 @@ Resources:
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: $request.body.action
       ApiKeySelectionExpression: $request.header.x-api-key
+      Tags:
+        Stack: !Ref Stack
+        Region: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
   ServerlessStatsDynamoDB:
     Type: AWS::DynamoDB::Table
@@ -67,3 +98,8 @@ Resources:
         - AttributeName: StatName
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Stack
+          Value: !Ref Stack
+        - Key: Region
+          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
