@@ -1,105 +1,210 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Description: |
-  Serverless application resources
+    Serverless application resources
 
 Parameters:
-  Stack:
-    Description: Software Stack
-    Type: String
-    Default: Production
-    AllowedValues:
-      - Sandbox
-      - Production
+    Stack:
+        Description: Software Stack
+        Type: String
+        Default: Production
+        AllowedValues:
+            - Sandbox
+            - Production
 
 Mappings:
-  RegionDirection:
-    us-east-1:
-      Direction: East
-    us-west-2:
-      Direction: West
-    ca-central-1:
-      Direction: Central
+    RegionDirection:
+        us-east-1:
+            Direction: East
+        us-west-2:
+            Direction: West
+        ca-central-1:
+            Direction: Central
 
 Resources:
-  ServerlessLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: ServerlessLambdaRole
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Effect: Allow
-          Principal:
-            Service: "lambda.amazonaws.com"
-          Action: "sts:AssumeRole"
-      Tags:
-        - Key: Stack
-          Value: !Ref Stack
-        - Key: Region
-          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
+    ServerlessLambdaRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: ServerlessLambdaRole
+            AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                    Effect: Allow
+                    Principal:
+                        Service: "lambda.amazonaws.com"
+                    Action: "sts:AssumeRole"
+            Tags:
+                - Key: Stack
+                  Value: !Ref Stack
+                - Key: Region
+                  Value:
+                      !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
-  ServerlessLambdaRolePolicy:
-    Type: AWS::IAM::RolePolicy
-    Properties:
-      RoleName: !Ref ServerlessLambdaRole
-      PolicyName: ServerlessLambdaRolePolicy
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-            Resource:
-              - "*"
+    ServerlessLambdaRolePolicy:
+        Type: AWS::IAM::RolePolicy
+        Properties:
+            RoleName: !Ref ServerlessLambdaRole
+            PolicyName: ServerlessLambdaRolePolicy
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: Allow
+                      Action:
+                          - logs:CreateLogGroup
+                          - logs:CreateLogStream
+                          - logs:PutLogEvents
+                      Resource:
+                          - "*"
 
-  ServerlessFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: websocket-serverless-lambda
-      Handler: ca.blockbreak.serverless.App
-      Code:
-        S3Bucket: !ImportValue CodeDeployS3Bucket
-        S3Key: serverless/serverless-1.0-SNAPSHOT.jar
-      Runtime: java25
-      Timeout: 5
-      Role: !GetAtt ServerlessLambdaRole.Arn
-      Tags:
-        - Key: Stack
-          Value: !Ref Stack
-        - Key: Region
-          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
+    ServerlessFunction:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: websocket-serverless-lambda
+            Handler: ca.blockbreak.serverless.App
+            Code:
+                S3Bucket: !ImportValue CodeDeployS3Bucket
+                S3Key: serverless/serverless-1.0-SNAPSHOT.jar
+            Runtime: java25
+            Timeout: 5
+            Role: !GetAtt ServerlessLambdaRole.Arn
+            Tags:
+                - Key: Stack
+                  Value: !Ref Stack
+                - Key: Region
+                  Value:
+                      !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
-  ServerlessAPIGateway:
-    Type: AWS::ApiGatewayV2::Api
-    Properties:
-      Name: ServerlessWebSocket
-      ProtocolType: WEBSOCKET
-      RouteSelectionExpression: $request.body.action
-      ApiKeySelectionExpression: $request.header.x-api-key
-      Tags:
-        Stack: !Ref Stack
-        Region: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
+    ServerlessAPIGateway:
+        Type: AWS::ApiGatewayV2::Api
+        Properties:
+            Name: ServerlessWebSocket
+            ProtocolType: WEBSOCKET
+            RouteSelectionExpression: $request.body.action
+            ApiKeySelectionExpression: $request.header.x-api-key
+            Tags:
+                Stack: !Ref Stack
+                Region:
+                    !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
 
-  ServerlessStatsDynamoDB:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ServerlessStatsDB
-      AttributeDefinitions:
-        - AttributeName: PlayerId
-          AttributeType: S
-        - AttributeName: StatName
-          AttributeType: S
-      KeySchema:
-        - AttributeName: PlayerId
-          KeyType: HASH
-        - AttributeName: StatName
-          KeyType: RANGE
-      BillingMode: PAY_PER_REQUEST
-      Tags:
-        - Key: Stack
-          Value: !Ref Stack
-        - Key: Region
-          Value: !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
+    ServerlessLambdaPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            Action: lambda:InvokeFunction
+            FunctionName: !Ref ServerlessFunction
+            Principal: apigateway.amazonaws.com
+
+    ServerlessAPIConnectIntegration:
+        Type: AWS::ApiGatewayV2::Integration
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            IntegrationType: AWS_PROXY
+            IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServerlessFunction.Arn}/invocations"
+
+    ServerlessAPIConnectRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            RouteKey: "$connect"
+            AuthorizationType: NONE
+            Target:
+                !Join [
+                    "/",
+                    ["integrations", !Ref ServerlessAPIConnectIntegration],
+                ]
+
+    ServerlessAPIDefaultIntegration:
+        Type: AWS::ApiGatewayV2::Integration
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            IntegrationType: AWS_PROXY
+            IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServerlessFunction.Arn}/invocations"
+
+    ServerlessAPIDefaultRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            RouteKey: "$default"
+            AuthorizationType: NONE
+            Target:
+                !Join [
+                    "/",
+                    ["integrations", !Ref ServerlessAPIDefaultIntegration],
+                ]
+
+    ServerlessAPIDisconnectIntegration:
+        Type: AWS::ApiGatewayV2::Integration
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            IntegrationType: AWS_PROXY
+            IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServerlessFunction.Arn}/invocations"
+
+    ServerlessAPIDisonnectRoute:
+        Type: AWS::ApiGatewayV2::Route
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            RouteKey: "$disconnect"
+            AuthorizationType: NONE
+            Target:
+                !Join [
+                    "/",
+                    ["integrations", !Ref ServerlessAPIDisconnectIntegration],
+                ]
+
+    ServerlessAPILogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: !Sub "${Stack}ServlerlessAPI"
+
+    ServerlessAPIStage:
+        Type: "AWS::ApiGatewayV2::Stage"
+        Properties:
+            StageName: !Ref Stack
+            ApiId: !Ref ServerlessAPIGateway
+            DefaultRouteSettings:
+                DetailedMetricsEnabled: true
+                LoggingLevel: INFO
+                DataTraceEnabled: true
+                ThrottlingBurstLimit: 10
+                ThrottlingRateLimit: 10
+            AccessLogSettings:
+                DestinationArn: !GetAtt ServerlessAPILogGroup.Arn
+                Format: >-
+                    {"requestId":"$context.requestId", "ip": "$context.identity.sourceIp",
+                    "caller":"$context.identity.caller",
+                    "user":"$context.identity.user","requestTime":"$context.requestTime",
+                    "eventType":"$context.eventType","routeKey":"$context.routeKey",
+                    "status":"$context.status","connectionId":"$context.connectionId"}
+            Tags:
+                Stack: !Ref Stack
+                Region:
+                    !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
+
+    ServerlessAPIDeploy:
+        Type: AWS::ApiGatewayV2::Deployment
+        DependsOn:
+            - ServerlessAPIStage
+        Properties:
+            ApiId: !Ref ServerlessAPIGateway
+            StageName: !Ref Stack
+
+    ServerlessStatsDynamoDB:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            TableName: ServerlessStatsDB
+            AttributeDefinitions:
+                - AttributeName: PlayerId
+                  AttributeType: S
+                - AttributeName: StatName
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: PlayerId
+                  KeyType: HASH
+                - AttributeName: StatName
+                  KeyType: RANGE
+            BillingMode: PAY_PER_REQUEST
+            Tags:
+                - Key: Stack
+                  Value: !Ref Stack
+                - Key: Region
+                  Value:
+                      !FindInMap [RegionDirection, !Ref AWS::Region, Direction]
