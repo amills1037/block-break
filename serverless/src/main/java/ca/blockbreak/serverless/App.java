@@ -20,7 +20,9 @@ public class App
         APIGatewayV2WebSocketResponse response =
             new APIGatewayV2WebSocketResponse();
         response.setStatusCode(200);
-        response.setBody("Message received!");
+        response.setBody("{ \"message\": \"Message received!\" }");
+
+        System.out.println("event.getBody(): " + event.getBody());
 
         return response;
     }
