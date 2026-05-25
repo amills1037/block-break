@@ -1,13 +1,42 @@
 services:
   dynamodb-local:
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    image: "amazon/dynamodb-local:latest"
+    image: amazon/dynamodb-local:latest
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath ./data
     container_name: dynamodb-local
     ports:
       - "8000:8000"
     volumes:
-      - "/mnt/External/BBDevel/dynamodb:/home/dynamodblocal/data"
+      - /mnt/External/BBDevel/dynamodb:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
+
+  database-postgresql:
+    image: postgres:15-alpine
+    container_name: database-postgresql
+    environment:
+      POSTGRES_PASSWORD: sshsecret
+    volumes:
+      - /mnt/External/BBDevel/db-postgresql:/var/lib/postgresql/data
+
+  database-mysql:
+    image: mariadb:12.2
+    container_name: database-mysql
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: true
+    volumes:
+      - /mnt/External/BBDevel/db-mysql:/var/lib/mysql:Z
+
+  database-redis:
+    image: redis:8.6-alpine
+    container_name: database-redis
+
+  database-mongodb:
+    image: mongo:7.0
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: shhsecret
+    volumes:
+      - /mnt/External/BBDevel/db-mongo:/data/db
 
   blockbreak-devel:
     build:
