@@ -10,11 +10,20 @@ Showcase web and gpu software development resources using server and serverless 
 
 https://www.blockbreak.ca
 
+Resources:
+ - AWS CloudFront
+ - AWS Route53
+ - AWS S3
+ - React 19.2
+
 ## Client
 
 Interactive React app.  Uses WebSockets to connect to the backend servers.  Can connect to either server or serverless infrastructer.
 
 Resources:
+ - AWS Route53
+ - AWS CloudFront
+ - AWS S3
  - React 19.2
  - Vite
  - Vitest
@@ -34,6 +43,8 @@ Resources:
 
 Resources:
 - AWS Lambdas
+- AWS DynamodDB
+- AWS API Gateway
 
 ## License
 

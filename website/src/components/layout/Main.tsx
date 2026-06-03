@@ -1,17 +1,29 @@
+import Server from "@/components/main/Server";
+import Serverless from "@/components/main/Serverless";
+import HeroTitle from "@ui/HeroTitle";
+import HeroSubtitle from "@ui/HeroSubtitle";
+import P from "@ui/P";
+
 function Main() {
-  return (
-    <main>
-      <p className="text-3xl font-bold underline">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </p>
-    </main>
-  );
+    return (
+        <main className="flex justify-center px-6 py-8 grow bg-white dark:bg-gray-800 shadow-md ring ring-gray-900/5">
+            <div className="flex flex-col gap-4 ">
+                <HeroTitle>Block Break</HeroTitle>
+                <HeroSubtitle>How many blocks can you break</HeroSubtitle>
+                <div className="flex flex-wrap gap-4">
+                    <Server />
+                    <Serverless />
+                </div>
+
+                <P>
+                    Showcase web and gpu software development resources using
+                    server and serverless infrastructures.
+                </P>
+
+                <P>Handcrafted with care by Anthony Mills.</P>
+            </div>
+        </main>
+    );
 }
 
 export default Main;
