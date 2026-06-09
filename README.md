@@ -32,7 +32,7 @@ Resources:
 ## Server
 
 Resources:
- - Docker compose
+ - Kubernetes
  - Spring framework
  - GraphQL
  - MongoDB
@@ -42,6 +42,7 @@ Resources:
 ## Serverless
 
 Resources:
+- Terraform
 - AWS Lambdas
 - AWS DynamodDB
 - AWS API Gateway
