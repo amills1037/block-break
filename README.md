@@ -6,6 +6,10 @@
 
 Showcase web and gpu software development resources using server and serverless infrastructures.
 
+*Work in progress* 
+
+Check back regularly for updates.
+
 ## Website
 
 https://www.blockbreak.ca
