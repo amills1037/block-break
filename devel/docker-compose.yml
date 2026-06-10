@@ -72,7 +72,7 @@ services:
         RUN apt-get install -y maven
 
         ## install rust
-        RUN apt-get install -y rustup
+        RUN apt-get install -y rustup pkg-config libwayland-dev libasound2-dev libudev-dev
 
         ## install aws cli package
         RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
