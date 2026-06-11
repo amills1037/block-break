@@ -27,7 +27,7 @@ module "www_s3_bucket" {
 
   force_destroy = true ## files are create by the build process
 
-  bucket = "cloudfront.www.${var.aws_route53_zone_name}"
+  bucket                   = "cloudfront.www.${var.aws_route53_zone_name}"
   control_object_ownership = false
 
   attach_policy = true
@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "www_s3_policy" {
 resource "aws_iam_policy" "github_www_s3_policy" {
   name        = "github-www-s3-policy"
   description = "Allows specific actions"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -100,23 +100,54 @@ module "www_distribution" {
 
   origin = {
     www_s3_bucket = {
-      domain_name = module.www_s3_bucket.s3_bucket_bucket_regional_domain_name
-      origin_access_control_key  = "s3_oac"
+      domain_name               = module.www_s3_bucket.s3_bucket_bucket_regional_domain_name
+      origin_access_control_key = "s3_oac"
     }
   }
 
   default_cache_behavior = {
     target_origin_id       = "www_s3_bucket"
     viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # AWS Managed-CachingDisabled
+    cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # AWS Managed-CachingDisabled
+
+    function_association = {
+      viewer-request = {
+        function_key = "append_index"
+      }
+    }
   }
 
   default_root_object = "index.html"
 
   viewer_certificate = {
-    acm_certificate_arn = module.acm.acm_certificate_arn
+    acm_certificate_arn      = module.acm.acm_certificate_arn
     minimum_protocol_version = "TLSv1.3_2025"
-    ssl_support_method  = "sni-only"
+    ssl_support_method       = "sni-only"
+  }
+
+  cloudfront_functions = {
+    append_index = {
+      runtime = "cloudfront-js-2.0"
+      comment = "Applend index.html to directories"
+      code    = <<-EOT
+        function handler(event) {
+            var request = event.request;
+            var uri = request.uri;
+
+            // If the URI ends with a slash, append 'index.html'
+            if (uri.endsWith('/')) {
+                request.uri += 'index.html';
+            }
+            // If the URI does not end with a slash and has no file extension, append '/index.html'
+            else if (!uri.includes('.')) {
+                request.uri += '/index.html';
+            }
+
+            return request;
+        }
+        EOT
+      publish = true
+    }
   }
 
   tags = local.tags
@@ -133,7 +164,7 @@ module "website_zone" {
   records = {
     apex = {
       full_name = var.aws_route53_zone_name
-      type = "A"
+      type      = "A"
 
       alias = {
         name    = module.www_distribution.cloudfront_distribution_domain_name
