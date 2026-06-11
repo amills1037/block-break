@@ -14,6 +14,14 @@ export default defineConfig({
             "@ui": path.resolve(__dirname, "./src/components/ui"),
         },
     },
+    build: {
+        rolldownOptions: {
+            input: {
+                main: path.resolve(__dirname, "index.html"),
+                error: path.resolve(__dirname, "error.html"),
+            },
+        },
+    },
     test: {
         globals: true, // Allows using describe, expect, etc. without importing
         environment: "jsdom", // Simulates a browser environment
