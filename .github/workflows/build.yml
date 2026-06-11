@@ -66,11 +66,8 @@ jobs:
           role-session-name: GitHub-Action-Role
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Upload Artifact to s3 server
-        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/server/
-
-      - name: Upload Artifact to s3 serverless
-        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/serverless/
+      - name: Upload Artifact to s3 client
+        run: aws s3 cp --recursive dist/ s3://${{ vars.S3BUCKET }}/client/
 
   build-serverless:
     environment:
