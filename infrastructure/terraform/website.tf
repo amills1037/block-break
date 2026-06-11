@@ -125,6 +125,21 @@ module "www_distribution" {
     ssl_support_method       = "sni-only"
   }
 
+  custom_error_response = [
+    {
+      error_code            = 404
+      response_code         = 404
+      response_page_path    = "/error.html"
+      error_caching_min_ttl = 300
+    },
+    {
+      error_code            = 403
+      response_code         = 404
+      response_page_path    = "/error.html"
+      error_caching_min_ttl = 300
+    },
+  ]
+
   cloudfront_functions = {
     append_index = {
       runtime = "cloudfront-js-2.0"
