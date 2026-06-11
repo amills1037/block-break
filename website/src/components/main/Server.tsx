@@ -1,4 +1,4 @@
-import ServerButton from "@/components/main/ServerButton";
+// import ServerButton from "@/components/main/ServerButton";
 import H2 from "@ui/H2";
 import HeroBox from "@ui/HeroBox";
 import P from "@ui/P";
@@ -15,10 +15,11 @@ function Server() {
                     database.
                 </div>
             </P>
-            <ServerButton />
+            <P>Temporarily Disabled while Kubernetes cluster created</P>
+            {/*<ServerButton />
             <ServerButton db="mysql" />
             <ServerButton db="postgresql" />
-            <ServerButton db="mongodb" />
+            <ServerButton db="mongodb" />*/}
         </HeroBox>
     );
 }

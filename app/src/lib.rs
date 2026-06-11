@@ -31,6 +31,7 @@ pub fn main() {
             primary_window: Some(Window {
                 // Matches the id="my-canvas" in your HTML
                 canvas: Some("#webasm-canvas".to_string()),
+                fit_canvas_to_parent: true,
                 ..default()
             }),
             ..default()
