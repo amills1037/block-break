@@ -10,23 +10,6 @@ module "serverless_s3_bucket" {
   tags = local.tags
 }
 
-module "serverless_lambda_function" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 8.8"
-
-  ## FIXME: Change the lambda function name in github action
-  function_name = "websocket-serverless-lambda"
-  # function_name = "production-block-break-${replace(var.aws_route53_zone_name, ".", "-")}"
-  description = "Serverless block break lambda"
-  handler     = "ca.blockbreak.serverless.App"
-  runtime     = "java25"
-
-  create_package         = false
-  local_existing_package = "../serverless/bootstrap/serverless.jar"
-
-  ignore_source_code_hash = true
-}
-
 resource "aws_iam_policy" "github_serverless_s3_policy" {
   name        = "github-serverless-s3-policy"
   description = "Allows specific actions"
@@ -52,6 +35,39 @@ resource "aws_iam_role_policy_attachment" "attach_github_serverless_s3_policy" {
   policy_arn = resource.aws_iam_policy.github_serverless_s3_policy.arn
 }
 
+module "serverless_lambda_function" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 8.8"
+
+  function_name = "websocket-serverless-lambda"
+  description = "Serverless block break lambda"
+  handler     = "ca.blockbreak.serverless.App"
+  runtime     = "java25"
+
+  create_package         = false
+  local_existing_package = "../serverless/bootstrap/serverless.jar"
+
+  ignore_source_code_hash = true
+
+  allowed_triggers = {
+    apigateway = {
+      service    = "apigateway"
+      source_arn = "${module.serverless_api_gateway.api_execution_arn}/*/*"
+    }
+  }
+
+  attach_policy_statements = true
+  policy_statements = {
+    manage_connections = {
+      effect    = "Allow",
+      actions   = ["execute-api:ManageConnections"],
+      resources = ["${module.serverless_api_gateway.api_execution_arn}/*"]
+    }
+  }
+
+  # publish=true
+}
+
 module "serverless_api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "~> 6.1"
@@ -59,6 +75,7 @@ module "serverless_api_gateway" {
   name          = "serverless-api-gateway"
   description   = "Block Break Serverless API Gateway"
   protocol_type = "WEBSOCKET"
+  route_selection_expression = "$request.body.action"
 
   # cors_configuration = {
   #   allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
@@ -105,6 +122,7 @@ module "serverless_api_gateway" {
     "$connect" = {
       logging_level = "INFO"
       integration = {
+        operation_name="ConnectRoute"
         uri = module.serverless_lambda_function.lambda_function_arn
       }
     }
@@ -112,6 +130,7 @@ module "serverless_api_gateway" {
     "$default" = {
       logging_level = "INFO"
       integration = {
+        operation_name="DefaultRoute"
         uri = module.serverless_lambda_function.lambda_function_arn
       }
     }
@@ -119,6 +138,7 @@ module "serverless_api_gateway" {
     "$disconnect" = {
       logging_level = "INFO"
       integration = {
+        operation_name="DisconnectRoute"
         uri = module.serverless_lambda_function.lambda_function_arn
       }
     }
@@ -127,15 +147,15 @@ module "serverless_api_gateway" {
   tags = local.tags
 }
 
-resource "aws_lambda_permission" "serverless_api" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = module.serverless_lambda_function.lambda_function_name
+# resource "aws_lambda_permission" "serverless_api" {
+#   statement_id  = "AllowExecutionFromAPIGateway"
+#   action        = "lambda:InvokeFunction"
+#   function_name = module.serverless_lambda_function.lambda_function_name
 
-  principal     = "apigateway.amazonaws.com"
+#   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "${module.serverless_api_gateway.api_execution_arn}/*/*"
-}
+#   source_arn = "${module.serverless_api_gateway.api_execution_arn}/*/*"
+# }
 
 module "serverless_stats_table" {
   source  = "terraform-aws-modules/dynamodb-table/aws"

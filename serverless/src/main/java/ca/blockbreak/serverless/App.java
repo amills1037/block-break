@@ -3,7 +3,7 @@ package ca.blockbreak.serverless;
 import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketResponse;
 
 /**
@@ -11,11 +11,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketRespons
  */
 public class App
     implements
-        RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2WebSocketResponse>
+        RequestHandler<APIGatewayV2WebSocketEvent, APIGatewayV2WebSocketResponse>
 {
 
     public APIGatewayV2WebSocketResponse handleRequest(
-        APIGatewayV2HTTPEvent event,
+        APIGatewayV2WebSocketEvent event,
         Context context
     ) {
         APIGatewayV2WebSocketResponse response =
@@ -24,8 +24,10 @@ public class App
         response.setBody("{ \"message\": \"Message received!\" }");
 
         Map<String, String> headers = event.getHeaders();
-        for (var header : headers.entrySet()) {
-            System.out.println(header.getKey() + ": " + header.getValue());
+        if (headers != null) {
+            for (var header : headers.entrySet()) {
+                System.out.println(header.getKey() + ": " + header.getValue());
+            }
         }
 
         System.out.println("event.getBody(): " + event.getBody());
