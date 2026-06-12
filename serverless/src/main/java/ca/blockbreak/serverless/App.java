@@ -1,5 +1,6 @@
 package ca.blockbreak.serverless;
 
+import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -21,6 +22,11 @@ public class App
             new APIGatewayV2WebSocketResponse();
         response.setStatusCode(200);
         response.setBody("{ \"message\": \"Message received!\" }");
+
+        Map<String, String> headers = event.getHeaders();
+        for (var header : headers.entrySet()) {
+            System.out.println(header.getKey() + ": " + header.getValue());
+        }
 
         System.out.println("event.getBody(): " + event.getBody());
 

@@ -100,19 +100,6 @@ module "serverless_api_gateway" {
     })
   }
 
-  # Authorizer(s)
-  # authorizers = {
-  #   "azure" = {
-  #     authorizer_type  = "JWT"
-  #     identity_sources = ["$request.header.Authorization"]
-  #     name             = "azure-auth"
-  #     jwt_configuration = {
-  #       audience         = ["d6a38afd-45d6-4874-d1aa-3c5c558aqcc2"]
-  #       issuer           = "https://sts.windows.net/aaee026e-8f37-410e-8869-72d9154873e4/"
-  #     }
-  #   }
-  # }
-
   # Routes & Integration(s)
   routes = {
     "$connect" = {
@@ -138,6 +125,16 @@ module "serverless_api_gateway" {
   }
 
   tags = local.tags
+}
+
+resource "aws_lambda_permission" "serverless_api" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = module.serverless_lambda_function.lambda_function_name
+
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${module.serverless_api_gateway.api_execution_arn}/*/*"
 }
 
 module "serverless_stats_table" {
