@@ -29,8 +29,30 @@ public class App
                 System.out.println(header.getKey() + ": " + header.getValue());
             }
         }
-
         System.out.println("event.getBody(): " + event.getBody());
+
+        System.out.println("getAccountId(): " + event.getRequestContext().getAccountId());
+        System.out.println("getApiId(): " + event.getRequestContext().getApiId());
+        // Map<String,Object> 	getAuthorizer(): " + event.getBody());
+        System.out.println("getConnectedAt(): " + event.getRequestContext().getConnectedAt());
+        System.out.println("getConnectionId(): " + event.getRequestContext().getConnectionId());
+        System.out.println("getDomainName(): " + event.getRequestContext().getDomainName());
+        System.out.println("getError(): " + event.getRequestContext().getError());
+        System.out.println("getEventType(): " + event.getRequestContext().getEventType());
+        System.out.println("getExtendedRequestId(): " + event.getRequestContext().getExtendedRequestId());
+        System.out.println("getHttpMethod(): " + event.getRequestContext().getHttpMethod());
+        // APIGatewayV2WebSocketEvent.RequestIdentity 	getIdentity()
+        System.out.println("getIntegrationLatency(): " + event.getRequestContext().getIntegrationLatency());
+        System.out.println("getMessageDirection(): " + event.getRequestContext().getMessageDirection());
+        System.out.println("getMessageId(): " + event.getRequestContext().getMessageId());
+        System.out.println("getRequestId(): " + event.getRequestContext().getRequestId());
+        System.out.println("getRequestTime(): " + event.getRequestContext().getRequestTime());
+        System.out.println("getRequestTimeEpoch(): " + event.getRequestContext().getRequestTimeEpoch());
+        System.out.println("getResourceId(): " + event.getRequestContext().getResourceId());
+        System.out.println("getResourcePath(): " + event.getRequestContext().getResourcePath());
+        System.out.println("getRouteKey(): " + event.getRequestContext().getRouteKey());
+        System.out.println("getStage(): " + event.getRequestContext().getStage());
+        System.out.println("getStatus(): " + event.getRequestContext().getStatus());
 
         return response;
     }
