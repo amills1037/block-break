@@ -1,7 +1,9 @@
 package ca.blockbreak.serverless;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketResponse;
@@ -18,46 +20,32 @@ public class App
         APIGatewayV2WebSocketEvent event,
         Context context
     ) {
+        LambdaLogger logger = context.getLogger();
+        logger.log("event.getBody(): " + event.getBody());
+
+        String eventType = event.getRequestContext().getEventType();
+        logger.log("requestContext.getBody(): " + eventType);
+
+        String routeKey = event.getRequestContext().getRouteKey();
+        logger.log("requestContext.getBody(): " + routeKey);
+
         APIGatewayV2WebSocketResponse response =
             new APIGatewayV2WebSocketResponse();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        response.setHeaders(headers);
         response.setStatusCode(200);
-        response.setBody("{ \"message\": \"Message received!\" }");
 
-        Map<String, String> headers = event.getHeaders();
-        if (headers != null) {
-            for (var header : headers.entrySet()) {
-                System.out.println(header.getKey() + ": " + header.getValue());
-            }
+        if ("CONNECT".equals(eventType)) {
+            response.setBody("{ \"message\": \"Connected\" }");
+        } else if ("DISCONNECT".equals(eventType)) {
+            response.setBody("{ \"message\": \"Disconnected\" }");
+        } else {
+            response.setBody("{ \"message\": \"Message received\" }");
         }
-        System.out.println("event.getBody(): " + event.getBody());
-
-        System.out.println("getAccountId(): " + event.getRequestContext().getAccountId());
-        System.out.println("getApiId(): " + event.getRequestContext().getApiId());
-        // Map<String,Object> 	getAuthorizer(): " + event.getBody());
-        System.out.println("getConnectedAt(): " + event.getRequestContext().getConnectedAt());
-        System.out.println("getConnectionId(): " + event.getRequestContext().getConnectionId());
-        System.out.println("getDomainName(): " + event.getRequestContext().getDomainName());
-        System.out.println("getError(): " + event.getRequestContext().getError());
-        System.out.println("getEventType(): " + event.getRequestContext().getEventType());
-        System.out.println("getExtendedRequestId(): " + event.getRequestContext().getExtendedRequestId());
-        System.out.println("getHttpMethod(): " + event.getRequestContext().getHttpMethod());
-        // APIGatewayV2WebSocketEvent.RequestIdentity 	getIdentity()
-        System.out.println("getIntegrationLatency(): " + event.getRequestContext().getIntegrationLatency());
-        System.out.println("getMessageDirection(): " + event.getRequestContext().getMessageDirection());
-        System.out.println("getMessageId(): " + event.getRequestContext().getMessageId());
-        System.out.println("getRequestId(): " + event.getRequestContext().getRequestId());
-        System.out.println("getRequestTime(): " + event.getRequestContext().getRequestTime());
-        System.out.println("getRequestTimeEpoch(): " + event.getRequestContext().getRequestTimeEpoch());
-        System.out.println("getResourceId(): " + event.getRequestContext().getResourceId());
-        System.out.println("getResourcePath(): " + event.getRequestContext().getResourcePath());
-        System.out.println("getRouteKey(): " + event.getRequestContext().getRouteKey());
-        System.out.println("getStage(): " + event.getRequestContext().getStage());
-        System.out.println("getStatus(): " + event.getRequestContext().getStatus());
 
         return response;
     }
 
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
-    }
 }
