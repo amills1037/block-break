@@ -3,7 +3,6 @@ package ca.blockbreak.serverless;
 import java.util.HashMap;
 import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketResponse;
@@ -26,17 +25,22 @@ public class App
         APIGatewayV2WebSocketEvent event,
         Context context
     ) {
-        LambdaLogger logger = context.getLogger();
-        logger.log("event.getBody(): " + event.getBody());
+        System.out.println("event.getBody(): " + event.getBody());
 
         String eventType = event.getRequestContext().getEventType();
-        logger.log("requestContext.getBody(): " + eventType);
+        System.out.println("requestContext.getEventType(): " + eventType);
 
         String routeKey = event.getRequestContext().getRouteKey();
-        logger.log("requestContext.getBody(): " + routeKey);
+        System.out.println("requestContext.getRouteKey(): " + routeKey);
 
         String callbackURL = String.format("https://%s/%s", event.getRequestContext().getDomainName(), event.getRequestContext().getStage());
-        logger.log("callbackURL: " + callbackURL);
+        System.out.println("callbackURL: " + callbackURL);
+        //https://{api-id}.execute-api.us-east-1.amazonaws.com/{stage}/@connections/{connection_id}
+
+        ApiGatewayManagementApiClient client = ApiGatewayManagementApiClient.builder()
+            .endpointOverride(URI.create(callbackURL))
+            .build();
+        // System.out.println("client: " + client);
 
         String data;
         if ("CONNECT".equals(eventType)) {
@@ -46,18 +50,15 @@ public class App
         } else {
             data = "{ \"message\": \"Message received\" }";
         }
-        logger.log("data: " + data);
-
-        ApiGatewayManagementApiClient client = ApiGatewayManagementApiClient.builder()
-            .endpointOverride(URI.create(callbackURL))
-            .build();
-        logger.log("client: " + client);
+        System.out.println("data: " + data);
+        String connectionId = event.getRequestContext().getConnectionId();
+        System.out.println("requestContext.getConnectionId(): " + connectionId);
 
         PostToConnectionRequest request = PostToConnectionRequest.builder()
             .connectionId(event.getRequestContext().getConnectionId())
             .data(SdkBytes.fromUtf8String(data))
             .build();
-        logger.log("request: " + request);
+        // System.out.println("request: " + request);
 
         // client.postToConnection(request);
 
