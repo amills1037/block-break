@@ -8,6 +8,12 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketResponse;
 
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.apigatewaymanagementapi.ApiGatewayManagementApiClient;
+import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConnectionRequest;
+import java.net.URI;
+
+
 /**
  * WebSocket
  */
@@ -31,19 +37,33 @@ public class App
 
         APIGatewayV2WebSocketResponse response =
             new APIGatewayV2WebSocketResponse();
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        response.setHeaders(headers);
         response.setStatusCode(200);
 
+        String callbackURL = String.format("https://%s/%s", event.getRequestContext().getDomainName(), event.getRequestContext().getStage());
+        logger.log("callbackURL: " + callbackURL);
+
+        String data;
         if ("CONNECT".equals(eventType)) {
-            response.setBody("{ \"message\": \"Connected\" }");
+            data = "{ \"message\": \"Connected\" }";
         } else if ("DISCONNECT".equals(eventType)) {
-            response.setBody("{ \"message\": \"Disconnected\" }");
+            data = "{ \"message\": \"Disconnected\" }";
         } else {
-            response.setBody("{ \"message\": \"Message received\" }");
+            data = "{ \"message\": \"Message received\" }";
         }
+        logger.log("data: " + data);
+
+        ApiGatewayManagementApiClient client = ApiGatewayManagementApiClient.builder()
+            .endpointOverride(URI.create(callbackURL))
+            .build();
+        logger.log("client: " + client);
+
+        PostToConnectionRequest request = PostToConnectionRequest.builder()
+            .connectionId(event.getRequestContext().getConnectionId())
+            .data(SdkBytes.fromUtf8String(data))
+            .build();
+        logger.log("request: " + request);
+
+        client.postToConnection(request);
 
         return response;
     }
