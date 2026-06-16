@@ -35,10 +35,6 @@ public class App
         String routeKey = event.getRequestContext().getRouteKey();
         logger.log("requestContext.getBody(): " + routeKey);
 
-        APIGatewayV2WebSocketResponse response =
-            new APIGatewayV2WebSocketResponse();
-        response.setStatusCode(200);
-
         String callbackURL = String.format("https://%s/%s", event.getRequestContext().getDomainName(), event.getRequestContext().getStage());
         logger.log("callbackURL: " + callbackURL);
 
@@ -63,7 +59,11 @@ public class App
             .build();
         logger.log("request: " + request);
 
-        client.postToConnection(request);
+        // client.postToConnection(request);
+
+        APIGatewayV2WebSocketResponse response =
+            new APIGatewayV2WebSocketResponse();
+        response.setStatusCode(200);
 
         return response;
     }
