@@ -40,9 +40,11 @@ module "serverless_lambda_function" {
   version = "~> 8.8"
 
   function_name = "websocket-serverless-lambda"
-  description = "Serverless block break lambda"
-  handler     = "ca.blockbreak.serverless.App"
-  runtime     = "java25"
+  description   = "Serverless block break lambda"
+  handler       = "ca.blockbreak.serverless.App"
+  runtime       = "java25"
+  memory_size   = "1024"
+  timeout       = "30"
 
   create_package         = false
   local_existing_package = "../serverless/bootstrap/serverless.jar"
@@ -63,6 +65,21 @@ module "serverless_lambda_function" {
       actions   = ["execute-api:ManageConnections"],
       resources = ["${module.serverless_api_gateway.api_execution_arn}/*"]
     }
+    dynamodb_access = {
+      effect = "Allow"
+      actions = [
+        "dynamodb:GetItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:PutItem",
+        "dynamodb:Scan",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem",
+      ]
+      resources = [
+        module.dynamodb_table.dynamodb_table_arn,
+        "${module.dynamodb_table.dynamodb_table_arn}/index/*"
+      ]
+    }
   }
 
   # publish=true
@@ -73,14 +90,14 @@ resource "aws_iam_role" "main_api_gateway_role" {
   name = "api-gateway-logs-role"
 
   assume_role_policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
+    "Version" : "2012-10-17",
+    "Statement" : [
       {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "apigateway.amazonaws.com"
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "apigateway.amazonaws.com"
         },
-        "Action": "sts:AssumeRole"
+        "Action" : "sts:AssumeRole"
       }
     ]
   })
@@ -95,9 +112,9 @@ module "serverless_api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
   version = "~> 6.1"
 
-  name          = "serverless-api-gateway"
-  description   = "Block Break Serverless API Gateway"
-  protocol_type = "WEBSOCKET"
+  name                       = "serverless-api-gateway"
+  description                = "Block Break Serverless API Gateway"
+  protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 
   # cors_configuration = {
@@ -119,7 +136,6 @@ module "serverless_api_gateway" {
     throttling_burst_limit   = 100
     throttling_rate_limit    = 100
   }
-
   # Access logs
   stage_access_log_settings = {
     create_log_group            = true
@@ -153,30 +169,34 @@ module "serverless_api_gateway" {
   # Routes & Integration(s)
   routes = {
     "$connect" = {
-      logging_level = "INFO"
+      logging_level      = "INFO"
       data_trace_enabled = true
       integration = {
-        operation_name="ConnectRoute"
-        uri = module.serverless_lambda_function.lambda_function_arn
+        operation_name = "ConnectRoute"
+        uri            = module.serverless_lambda_function.lambda_function_arn
       }
     }
 
     "$default" = {
-      logging_level = "INFO"
+      logging_level      = "INFO"
       data_trace_enabled = true
       integration = {
-        operation_name="DefaultRoute"
-        uri = module.serverless_lambda_function.lambda_function_arn
+        operation_name = "DefaultRoute"
+        uri            = module.serverless_lambda_function.lambda_function_arn
       }
+
+      # We are going to send responses back with @connections
+      # route_response_key = "$default"
     }
 
     "$disconnect" = {
-      logging_level = "INFO"
+      logging_level      = "INFO"
       data_trace_enabled = true
       integration = {
-        operation_name="DisconnectRoute"
-        uri = module.serverless_lambda_function.lambda_function_arn
+        operation_name = "DisconnectRoute"
+        uri            = module.serverless_lambda_function.lambda_function_arn
       }
+
     }
   }
 
@@ -188,7 +208,7 @@ resource "aws_lambda_permission" "serverless_api" {
   action        = "lambda:InvokeFunction"
   function_name = module.serverless_lambda_function.lambda_function_name
 
-  principal     = "apigateway.amazonaws.com"
+  principal = "apigateway.amazonaws.com"
 
   source_arn = "${module.serverless_api_gateway.api_execution_arn}/*/*"
 }
@@ -227,4 +247,23 @@ resource "aws_dynamodb_table_item" "serverless_stats_item" {
     StatName : { S : "blocksBroken" },
     Stat : { N : "0" }
   })
+}
+
+module "serverless_connections_table" {
+  source  = "terraform-aws-modules/dynamodb-table/aws"
+  version = "~> 5.5"
+
+  name         = "production-block-break-connection"
+  billing_mode = "PAY_PER_REQUEST"
+
+  hash_key = "ConnectionId"
+
+  attributes = [
+    {
+      name = "ConnectionId"
+      type = "S"
+    }
+  ]
+
+  tags = local.tags
 }
