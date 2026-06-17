@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 /**
- * Unit test for simple App.
+ * Unit tests for stats database table.
  */
 public final class StatsDAOTest {
 
@@ -30,7 +30,7 @@ public final class StatsDAOTest {
      export AWS_ENDPOINT_URL_DYNAMODB=http://external:8000
 
     aws dynamodb create-table \
-        --table-name DevelopmentServerlessStatsCentral \
+        --table-name development-block-break-stats \
         --attribute-definitions \
             AttributeName=PlayerId,AttributeType=S \
             AttributeName=StatName,AttributeType=S \
@@ -39,17 +39,17 @@ public final class StatsDAOTest {
         --table-class STANDARD
 
         aws dynamodb put-item \
-            --table-name DevelopmentServerlessStatsCentral \
+            --table-name development-block-break-stats \
             --item '{"PlayerId": {"S": "global"}, "StatName": {"S": "blocksBroken"}, "stat": {"N": "0"}}'
 
         aws dynamodb get-item \
-            --table-name DevelopmentServerlessStatsCentral \
+            --table-name development-block-break-stats \
             --key '{"PlayerId": {"S": "global"}, "StatName": {"S": "blocksBroken"}}'
      */
 
     @BeforeAll
     public static void beforeAll() {
-        final var tableName = "DevelopmentServerlessStatsCentral";
+        final var tableName = "development-block-break-stats";
         final String playerId = "PlayerId";
         final String statName = "StatName";
         final String stat = "Stat";
@@ -121,19 +121,30 @@ public final class StatsDAOTest {
     public void shouldIncrementGlobalCounter() {
         try (var secrets = new SecretsManager()) {
             try (var statsDAO = new StatsDAO(secrets)) {
-                int s = statsDAO.incrementGlobalCounter();
-                System.out.println("s: " + s);
-                assertTrue(s > 0);
+                int globalCount = statsDAO.incrementGlobalCounter();
+                System.out.println("globalCount: " + globalCount);
+                assertTrue(globalCount > 0);
             }
         }
     }
 
+    /**
+     * Test get the global counter.  Should return a value greater than 0
+     */
     @Test
-    public void shouldInitDatabase() {
+    public void shouldGetGlobalCounter() {
         try (var secrets = new SecretsManager()) {
             try (var statsDAO = new StatsDAO(secrets)) {
-                statsDAO.initDatabase();
+                int globalCount = statsDAO.incrementGlobalCounter();
+                System.out.println("globalCount: " + globalCount);
+                assertTrue(globalCount > 0);
             }
         }
     }
+
+    // public void close() {
+    // }
+
+    // public String getTableName(SecretsManager sm) {
+    // }
 }

@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.apigatewaymanagementapi.ApiGatewayManagem
 import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConnectionRequest;
 import java.net.URI;
 
+import software.amazon.awssdk.services.apigatewaymanagementapi.model.GoneException;
 
 /**
  * WebSocket
@@ -33,9 +34,12 @@ public class App
         String routeKey = event.getRequestContext().getRouteKey();
         System.out.println("requestContext.getRouteKey(): " + routeKey);
 
-        String callbackURL = String.format("https://%s/%s", event.getRequestContext().getDomainName(), event.getRequestContext().getStage());
+        //https://{api-id}.execute-api.{region}.amazonaws.com/{stage}/@connections/{connection_id}
+        String callbackURL = String.format("https://%s.execute-api.%s.amazonaws.com/%s",
+            event.getRequestContext().getApiId(),
+            System.getenv("AWS_REGION"),
+            event.getRequestContext().getStage());
         System.out.println("callbackURL: " + callbackURL);
-        //https://{api-id}.execute-api.us-east-1.amazonaws.com/{stage}/@connections/{connection_id}
 
         ApiGatewayManagementApiClient client = ApiGatewayManagementApiClient.builder()
             .endpointOverride(URI.create(callbackURL))
@@ -60,11 +64,19 @@ public class App
             .build();
         // System.out.println("request: " + request);
 
-        // client.postToConnection(request);
+        try {
+            client.postToConnection(request);
+        } catch (GoneException ge) {
+            System.out.println("GoneException: " + ge);
+        }
 
         APIGatewayV2WebSocketResponse response =
             new APIGatewayV2WebSocketResponse();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        response.setHeaders(headers);
         response.setStatusCode(200);
+        response.setBody(data);
 
         return response;
     }

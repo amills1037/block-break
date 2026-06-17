@@ -33,8 +33,19 @@
   </dependencyManagement>
 
   <dependencies>
-      <!-- Source: https://mvnrepository.com/artifact/software.amazon.awssdk/lambda -->
-      <dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.18</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>2.0.18</version>
+    </dependency>
+
+    <!-- Source: https://mvnrepository.com/artifact/software.amazon.awssdk/lambda -->
+    <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>lambda</artifactId>
         <version>2.44.9</version>
