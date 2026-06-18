@@ -1,27 +1,25 @@
 package ca.blockbreak.serverless;
 
-import java.util.HashMap;
-import java.util.Map;
+import ca.blockbreak.serverless.database.SecretsManager;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2WebSocketResponse;
-
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.services.apigatewaymanagementapi.ApiGatewayManagementApiClient;
-import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConnectionRequest;
-import java.net.URI;
-
-import software.amazon.awssdk.services.apigatewaymanagementapi.model.GoneException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * WebSocket
  */
 public class App
     implements
-        RequestHandler<APIGatewayV2WebSocketEvent, APIGatewayV2WebSocketResponse>
+        RequestHandler<
+            APIGatewayV2WebSocketEvent,
+            APIGatewayV2WebSocketResponse
+        >
 {
 
+    @Override
     public APIGatewayV2WebSocketResponse handleRequest(
         APIGatewayV2WebSocketEvent event,
         Context context
@@ -34,17 +32,8 @@ public class App
         String routeKey = event.getRequestContext().getRouteKey();
         System.out.println("requestContext.getRouteKey(): " + routeKey);
 
-        //https://{api-id}.execute-api.{region}.amazonaws.com/{stage}/@connections/{connection_id}
-        String callbackURL = String.format("https://%s.execute-api.%s.amazonaws.com/%s",
-            event.getRequestContext().getApiId(),
-            System.getenv("AWS_REGION"),
-            event.getRequestContext().getStage());
-        System.out.println("callbackURL: " + callbackURL);
-
-        ApiGatewayManagementApiClient client = ApiGatewayManagementApiClient.builder()
-            .endpointOverride(URI.create(callbackURL))
-            .build();
-        // System.out.println("client: " + client);
+        String connectionId = event.getRequestContext().getConnectionId();
+        System.out.println("requestContext.getConnectionId(): " + connectionId);
 
         String data;
         if ("CONNECT".equals(eventType)) {
@@ -52,23 +41,22 @@ public class App
         } else if ("DISCONNECT".equals(eventType)) {
             data = "{ \"message\": \"Disconnected\" }";
         } else {
-            data = "{ \"message\": \"Message received\" }";
+            data = "{ \"message\": \"Disconnected\" }";
+            try (SecretsManager sm = new SecretsManager()) {
+                if ("connect".equals(routeKey)) {
+                    var connect = new Connect(sm);
+                    Connect.Message message = new Connect.Message(
+                        event.getRequestContext().getConnectionId()
+                    );
+                    connect.processMessage(message);
+                } else if ("breakblock".equals(routeKey)) {
+                    var breakBlock = new BreakBlock(sm);
+                    //bad will throw null pointer exception
+                    breakBlock.processMessage(null);
+                }
+            }
         }
         System.out.println("data: " + data);
-        String connectionId = event.getRequestContext().getConnectionId();
-        System.out.println("requestContext.getConnectionId(): " + connectionId);
-
-        PostToConnectionRequest request = PostToConnectionRequest.builder()
-            .connectionId(event.getRequestContext().getConnectionId())
-            .data(SdkBytes.fromUtf8String(data))
-            .build();
-        // System.out.println("request: " + request);
-
-        try {
-            client.postToConnection(request);
-        } catch (GoneException ge) {
-            System.out.println("GoneException: " + ge);
-        }
 
         APIGatewayV2WebSocketResponse response =
             new APIGatewayV2WebSocketResponse();
@@ -80,5 +68,4 @@ public class App
 
         return response;
     }
-
 }

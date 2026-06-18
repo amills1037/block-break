@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
@@ -82,12 +81,7 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
             AttributeValue.builder().s(connectionId).build()
         );
 
-        var deleteRequest = DeleteItemRequest.builder()
-            .tableName(tableName)
-            .key(item)
-            .build();
-
-        var response = dbClient.deleteItem(deleteRequest);
+        DeleteItemRequest.builder().tableName(tableName).key(item).build();
     }
 
     public List<String> getConnections() {
@@ -98,11 +92,6 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
         ScanResponse response = dbClient.scan(scanRequest);
         for (Map<String, AttributeValue> item : response.items()) {
             AttributeValue value = item.get(KEY_CONNECTION_ID);
-
-            System.err.println("value~~~~~~~~~~~");
-            System.err.println(value.s());
-            System.err.println("~~~~~~~~~~~value");
-
             connections.add(value.s());
         }
 
