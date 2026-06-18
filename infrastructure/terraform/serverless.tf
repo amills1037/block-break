@@ -76,12 +76,19 @@ module "serverless_lambda_function" {
         "dynamodb:UpdateItem",
       ]
       resources = [
-        module.dynamodb_table.dynamodb_table_arn,
-        "${module.dynamodb_table.dynamodb_table_arn}/index/*"
+        module.serverless_connection_table.dynamodb_table_arn,
+        "${module.serverless_connection_table.dynamodb_table_arn}/index/*",
+        module.serverless_stats_table.dynamodb_table_arn,
+        "${module.serverless_stats_table.dynamodb_table_arn}/index/*"
       ]
     }
   }
 
+  environment_variables = {
+    STACK = "Production"
+  }
+
+  tags = local.tags
   # publish=true
 }
 
@@ -189,6 +196,24 @@ module "serverless_api_gateway" {
       # route_response_key = "$default"
     }
 
+    "blockbreak" = {
+      logging_level      = "INFO"
+      data_trace_enabled = true
+      integration = {
+      operation_name = "BlockBreakMessageRoute"
+      uri            = module.serverless_lambda_function.lambda_function_arn
+      }
+    }
+
+    "connect" = {
+      logging_level      = "INFO"
+      data_trace_enabled = true
+      integration = {
+        operation_name = "ConnectMessageRoute"
+        uri            = module.serverless_lambda_function.lambda_function_arn
+      }
+    }
+
     "$disconnect" = {
       logging_level      = "INFO"
       data_trace_enabled = true
@@ -249,7 +274,7 @@ resource "aws_dynamodb_table_item" "serverless_stats_item" {
   })
 }
 
-module "serverless_connections_table" {
+module "serverless_connection_table" {
   source  = "terraform-aws-modules/dynamodb-table/aws"
   version = "~> 5.5"
 

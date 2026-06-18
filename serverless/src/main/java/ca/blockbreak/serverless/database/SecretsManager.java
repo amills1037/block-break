@@ -1,5 +1,7 @@
 package ca.blockbreak.serverless.database;
 
+import java.util.Objects;
+
 /**
  * Manager for accessing secret and enviornment variables.  Values should not change after first use.
  *
@@ -12,7 +14,7 @@ public final class SecretsManager implements AutoCloseable {
      * @return softwre stack
      */
     public String getStack() {
-        return "Development";
+        return Objects.requireNonNullElse(System.getenv("STACK"), "Development");
     }
 
     /**
