@@ -47,7 +47,7 @@ module "serverless_lambda_function" {
   timeout       = "30"
 
   create_package         = false
-  local_existing_package = "../serverless/bootstrap/serverless.jar"
+  local_existing_package = "../../serverless/bootstrap/serverless.jar"
 
   ignore_source_code_hash = true
 
@@ -61,8 +61,11 @@ module "serverless_lambda_function" {
   attach_policy_statements = true
   policy_statements = {
     manage_connections = {
-      effect    = "Allow",
-      actions   = ["execute-api:ManageConnections"],
+      effect = "Allow",
+      actions = [
+        "execute-api:ManageConnections",
+        "execute-api:Invoke"
+      ],
       resources = ["${module.serverless_api_gateway.api_execution_arn}/*"]
     }
     dynamodb_access = {
@@ -89,7 +92,6 @@ module "serverless_lambda_function" {
   }
 
   tags = local.tags
-  # publish=true
 }
 
 # API Gateway to log to CloudWatch
@@ -196,12 +198,12 @@ module "serverless_api_gateway" {
       # route_response_key = "$default"
     }
 
-    "blockbreak" = {
+    "breakblock" = {
       logging_level      = "INFO"
       data_trace_enabled = true
       integration = {
-      operation_name = "BlockBreakMessageRoute"
-      uri            = module.serverless_lambda_function.lambda_function_arn
+        operation_name = "BlockBreakMessageRoute"
+        uri            = module.serverless_lambda_function.lambda_function_arn
       }
     }
 
@@ -259,6 +261,9 @@ module "serverless_stats_table" {
     }
   ]
 
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
   tags = local.tags
 }
 
@@ -291,4 +296,89 @@ module "serverless_connection_table" {
   ]
 
   tags = local.tags
+}
+
+module "dynamodb_lambda_function" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 8.8"
+
+  function_name = "dynamodb-serverless-lambda"
+  description   = "DynamoDB block break lambda"
+  handler       = "ca.blockbreak.serverless.GlobalIncrementHandler"
+  runtime       = "java25"
+  memory_size   = "1024"
+  timeout       = "30"
+
+  create_package         = false
+  local_existing_package = "../../serverless/bootstrap/serverless.jar"
+
+  ignore_source_code_hash = true
+
+  allowed_triggers = {
+    dynamodb = {
+      service    = "dynamodb"
+      source_arn = module.serverless_stats_table.dynamodb_table_stream_arn
+    }
+  }
+  create_current_version_allowed_triggers = false
+  publish                                 = true
+
+  attach_policy_statements = true
+  policy_statements = {
+    manage_connections = {
+      effect = "Allow",
+      actions = [
+        "execute-api:ManageConnections",
+      ],
+      resources = ["${module.serverless_api_gateway.api_execution_arn}/*"]
+    }
+
+    invoke_connections = {
+      effect = "Allow",
+      actions = [
+        "execute-api:Invoke",
+      ],
+      resources = ["*"]
+    }
+
+    dynamodb_access = {
+      effect = "Allow"
+      actions = [
+        "dynamodb:Scan",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:ListStreams"
+      ]
+      resources = [
+        module.serverless_connection_table.dynamodb_table_arn,
+        "${module.serverless_connection_table.dynamodb_table_arn}/index/*",
+        "${module.serverless_stats_table.dynamodb_table_arn}/stream/*",
+        module.serverless_stats_table.dynamodb_table_arn,
+        "${module.serverless_stats_table.dynamodb_table_arn}/index/*",
+        "${module.serverless_stats_table.dynamodb_table_arn}/stream/*"
+      ]
+    }
+  }
+
+  # arn:aws:dynamodb:ca-central-1:743114209664:table/production-block-break-stats/stream/2026-06-19T04:05:36.263
+
+  environment_variables = {
+    STACK          = "Production"
+    CONNECTION_URL = "https://${module.serverless_api_gateway.api_id}.execute-api.ca-central-1.amazonaws.com/prod/"
+  }
+
+  tags = local.tags
+
+}
+
+resource "aws_lambda_permission" "serverless_dynamodb" {
+  statement_id  = "AllowExecutionFromDynamoDB"
+  action        = "lambda:InvokeFunction"
+  function_name = module.dynamodb_lambda_function.lambda_function_name
+
+  principal = "dynamodb.amazonaws.com"
+
+  source_arn = "${module.serverless_connection_table.dynamodb_table_arn}/*/*"
 }

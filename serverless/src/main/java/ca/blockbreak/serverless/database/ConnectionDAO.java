@@ -81,7 +81,12 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
             AttributeValue.builder().s(connectionId).build()
         );
 
-        DeleteItemRequest.builder().tableName(tableName).key(item).build();
+        var deleteRequest = DeleteItemRequest.builder()
+            .tableName(tableName)
+            .key(item)
+            .build();
+
+        dbClient.deleteItem(deleteRequest);
     }
 
     public List<String> getConnections() {
