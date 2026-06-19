@@ -52,7 +52,9 @@ public class App
                 } else if ("breakblock".equals(routeKey)) {
                     var breakBlock = new BreakBlock(sm);
                     //bad will throw null pointer exception
-                    breakBlock.processMessage(null);
+                    breakBlock.processMessage(
+                        new BreakBlock.Message(0l, 1, 1, 2, 3)
+                    );
                 }
             }
         }
