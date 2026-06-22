@@ -11,8 +11,8 @@ function Main() {
                 <HeroTitle>Block Break</HeroTitle>
                 <HeroSubtitle>How many blocks can you break</HeroSubtitle>
                 <div className="flex flex-wrap gap-4">
-                    <Server />
                     <Serverless />
+                    <Server />
                 </div>
 
                 <P>
