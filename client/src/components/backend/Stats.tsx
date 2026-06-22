@@ -1,7 +1,12 @@
-import { useEffect, useImperativeHandle, useRef } from "react";
+import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 
-function Stats({ ref, setCount }) {
-    const ws = useRef(null);
+interface StatsInterface {
+    ref?: Ref<{ breakBlock: () => void }>;
+    setCount: (c: number) => void;
+}
+
+function Stats({ ref, setCount }: StatsInterface) {
+    const ws = useRef<WebSocket>(null!);
     useEffect(() => {
         ws.current = new WebSocket("wss://serverless.blockbreak.ca:443");
         ws.current.onopen = () => {

@@ -1,4 +1,8 @@
-function Header({ globalCount }) {
+interface GlobalCount {
+    globalCount: number;
+}
+
+function Header({ globalCount }: GlobalCount) {
     return (
         <header className="px-3 py-4 flex gap-2 bg-teal-700 ring ring-gray-900">
             {/* "arrow" from https://fonts.google.com/icons arrow back */}

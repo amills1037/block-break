@@ -6,12 +6,12 @@ import Main from "@/components/layout/Main";
 import Stats from "@/components/backend/Stats";
 
 function App() {
-    const statsRef = useRef(null);
+    const statsRef = useRef<{ breakBlock: () => void }>(null!);
     const [count, setCount] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            console.log("breakBlock:", statsRef.current.breakBlock());
+            console.log("breakBlock:", statsRef.current?.breakBlock());
         }, 1000);
 
         return () => {
