@@ -10,6 +10,22 @@ Showcase web and gpu software development resources using server and serverless 
 
 Check back regularly for updates.
 
+## Code ##
+
+*Java*
+[serverless](serverless)
+[server](server)
+
+*React*
+[client](client)
+[website](website)
+
+*Rust*
+[app](app)
+
+*Terraform*
+[terraform](infrastructure)
+
 ## Website
 
 https://www.blockbreak.ca
@@ -37,7 +53,7 @@ Resources:
 
 Resources:
  - Kubernetes
- - Spring framework
+ - Spring Framework
  - GraphQL
  - MongoDB
  - MySQL
@@ -47,9 +63,9 @@ Resources:
 
 Resources:
 - Terraform
-- AWS Lambdas
-- AWS DynamodDB
 - AWS API Gateway
+- AWS DynamodDB
+- AWS Lambdas
 
 ## License
 
