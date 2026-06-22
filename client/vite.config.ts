@@ -15,6 +15,12 @@ export default defineConfig({
             "@ui": path.resolve(__dirname, "./src/components/ui"),
         },
     },
+    server: {
+        cors: {
+            origin: "wss://server.blockbreak.ca:443", // Allow specific origin
+            methods: ["GET"],
+        },
+    },
     test: {
         globals: true, // Allows using describe, expect, etc. without importing
         environment: "jsdom", // Simulates a browser environment

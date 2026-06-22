@@ -247,6 +247,8 @@ module "serverless_stats_table" {
   name         = "production-block-break-stats"
   billing_mode = "PAY_PER_REQUEST"
 
+  deletion_protection_enabled = true
+
   hash_key  = "PlayerId"
   range_key = "StatName"
 
