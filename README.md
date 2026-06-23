@@ -1,8 +1,9 @@
 # block-break
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/amills1037/block-break/build.yml)](https://github.com/amills1037/block-break/actions)
-[![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
+[![Production](https://github.com/amills1037/block-break/actions/workflows/production.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/production.yml)
+[![Staging](https://github.com/amills1037/block-break/actions/workflows/staging.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/staging.yml)
 [![Version](https://img.shields.io/github/v/release/amills1037/block-break)](https://github.com/amills1037/block-break/releases)
+[![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
 
 Showcase web and gpu software development resources using server and serverless infrastructures.
 
@@ -24,7 +25,7 @@ Check back regularly for updates.
 [app](app)
 
 *Terraform*
-[terraform](infrastructure)
+[terraform](infrastructure/terraform)
 
 ## Website
 
