@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service
+  namespace: block-break
+  annotations:
+      kube-vip.io/loadbalancerIPs: "10.214.0.12"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3306
+  selector:
+    app: mariadb
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mariadb-statefulset
+  namespace: block-break
+spec:
+  serviceName: mariadb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:11.4
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+             ## kubectl create secret generic -n block-break maria-db-secret --from-literal=password=ChangeMe!
+              valueFrom:
+                secretKeyRef:
+                  name: maria-db-secret
+                  key: password
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: mariadb-storage
+        namespace: block-break
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi
