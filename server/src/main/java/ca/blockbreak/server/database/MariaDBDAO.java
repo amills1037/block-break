@@ -1,7 +1,6 @@
 package ca.blockbreak.server.database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -25,7 +24,7 @@ public final class MariaDBDAO implements StatsDAO {
                         String username = sm.getMariaDBUsername();
                         String password = sm.getMariaDBPassword();
 
-                        // Format: jdbc:mariadb://<host>:<port>/<database>?maxPoolSize=<size>
+                        //Should consider using Apache Commons DBCP
                         String url = "jdbc:mariadb://" + host + ":3306/" + database + "?user=" + username + "&password=" + password + "&maxPoolSize=5";
                         dataSource = new MariaDbPoolDataSource(url);
 

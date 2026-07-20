@@ -1,26 +1,40 @@
 package ca.blockbreak.server.database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.postgresql.ds.PGConnectionPoolDataSource;
 
 public final class PostgreSQLDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
+    private static PGConnectionPoolDataSource dataSource;
+
     private Connection sqlConnection;
 
     public PostgreSQLDAO(SecretsManager sm) {
-        String host = sm.getPostgreSQLHost();
-        String database = sm.getPostgreSQLDatabase();
+        if (dataSource == null) {
+            synchronized(MariaDBDAO.class) {
+                if (dataSource == null) {
+                    String host = sm.getPostgreSQLHost();
+                    String database = sm.getPostgreSQLDatabase();
+                    String username = sm.getPostgreSQLUsername();
+                    String password = sm.getPostgreSQLPassword();
 
-        String url = "jdbc:postgresql://" + host + ":5432/" + database;
-        String username = sm.getPostgreSQLUsername();
-        String password = sm.getPostgreSQLPassword();
+                    //Should consider using Apache Commons DBCP
+                    String url = "jdbc:postgresql://" + host + ":5432/" + database + "?maxPoolSize=5";
+                    dataSource = new PGConnectionPoolDataSource();
+                    dataSource.setURL(url);
+                    dataSource.setUser(username);
+                    dataSource.setPassword(password);
+                }
+            }
+        }
 
         try {
-            sqlConnection = DriverManager.getConnection(url, username, password);
+            sqlConnection = dataSource.getConnection();
         } catch (SQLException sqle) {
             throw new DataAccessException(sqle.getMessage(), sqle);
         }
