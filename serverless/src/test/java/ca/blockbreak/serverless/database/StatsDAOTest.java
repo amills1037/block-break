@@ -27,7 +27,7 @@ public final class StatsDAOTest {
      export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
      export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
      export AWS_REGION="ca-central-1"
-     export AWS_ENDPOINT_URL_DYNAMODB=http://external:8000
+     export AWS_ENDPOINT_URL_DYNAMODB=http://ip_address:8000
 
     aws dynamodb create-table \
         --table-name development-block-break-stats \
@@ -118,11 +118,11 @@ public final class StatsDAOTest {
      * Test incrementing the global counter.  Should return a value greater than 0
      */
     @Test
-    public void shouldIncrementGlobalCounter() {
+    public void shouldIncrementGlobalCount() {
         try (var secrets = new SecretsManager()) {
             try (var statsDAO = new StatsDAO(secrets)) {
-                int globalCount = statsDAO.incrementGlobalCounter();
-                System.out.println("globalCount: " + globalCount);
+                int globalCount = statsDAO.incrementGlobalCount();
+                System.out.println("increment globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }
         }
@@ -132,11 +132,11 @@ public final class StatsDAOTest {
      * Test get the global counter.  Should return a value greater than 0
      */
     @Test
-    public void shouldGetGlobalCounter() {
+    public void shouldGetGlobalCount() {
         try (var secrets = new SecretsManager()) {
             try (var statsDAO = new StatsDAO(secrets)) {
-                int globalCount = statsDAO.incrementGlobalCounter();
-                System.out.println("globalCount: " + globalCount);
+                int globalCount = statsDAO.getGlobalCount();
+                System.out.println("get globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }
         }

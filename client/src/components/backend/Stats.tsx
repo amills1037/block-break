@@ -1,47 +1,31 @@
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 
+import StatsWebSocket from "@/lib/StatsWebSocket";
+
 interface StatsInterface {
     ref?: Ref<{ breakBlock: () => void }>;
     setCount: (c: number) => void;
 }
 
 function Stats({ ref, setCount }: StatsInterface) {
-    const ws = useRef<WebSocket>(null!);
+    const sws = useRef<StatsWebSocket>(null!);
     useEffect(() => {
-        ws.current = new WebSocket("wss://serverless.blockbreak.ca:443");
-        ws.current.onopen = () => {
-            console.log("onopen");
-            ws.current.send('{"action": "connect"}');
-        };
+        console.log("Stats useEffect");
 
-        ws.current.onclose = () => console.log("onclose");
-
-        ws.current.onmessage = (event: { data: string }) => {
-            const data: { action: string } = JSON.parse(event.data);
-            if (data.action === "global") {
-                const global = data as {
-                    action: "global";
-                    data: { count: number };
-                };
-
-                console.log("global.data.count", global.data.count);
-
-                setCount(global.data.count);
-            }
-        };
+        sws.current = new StatsWebSocket(
+            "wss://serverless.blockbreak.ca:443",
+            (c: number) => console.log("count", c),
+        );
 
         return () => {
-            if (ws.current) ws.current.close();
+            if (sws.current) sws.current.close();
         };
     }, [setCount]);
 
     useImperativeHandle(ref, () => {
         return {
             breakBlock: () => {
-                if (ws.current?.readyState === WebSocket.OPEN) {
-                    console.log("breakBlock: ", "action=breakblock");
-                    ws.current?.send('{"action": "breakblock"}');
-                }
+                sws.current?.breakBlock();
             },
         };
     }, []);
