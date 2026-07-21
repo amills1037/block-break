@@ -1,0 +1,5 @@
+// db.stats() is a function, so use "statistics"
+db.statistics.insertOne({ player_id: "global", stat_name: "blocksBroken", stat: 0 });
+
+db.statistics.createIndex({ player_id: 1 });
+db.statistics.createIndex({ player_id: 1, stat_name: 1  }, { unique: true });

@@ -43,7 +43,7 @@ public final class StatsDAO implements java.lang.AutoCloseable {
         tableName = getTableName(sm);
     }
 
-    public int incrementGlobalCounter() {
+    public int incrementGlobalCount() {
         Map<String, AttributeValue> primaryKey = new HashMap<>();
         primaryKey.put(
             KEY_PLAYER_ID,
@@ -72,7 +72,7 @@ public final class StatsDAO implements java.lang.AutoCloseable {
         return Integer.parseInt(stat);
     }
 
-    public int getGlobalCounter() {
+    public int getGlobalCount() {
         Map<String, AttributeValue> primaryKey = new HashMap<>();
         primaryKey.put(
             KEY_PLAYER_ID,

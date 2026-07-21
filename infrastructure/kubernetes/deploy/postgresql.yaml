@@ -1,36 +1,36 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mariadb-service
+  name: postgresql-service
   namespace: block-break
   annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.12"
+      kube-vip.io/loadbalancerIPs: "10.214.0.13"
 spec:
   type: LoadBalancer
   ports:
-    - port: 3306
+    - port: 5432
   selector:
-    app: mariadb
+    app: postgresql
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mariadb-statefulset
+  name: postgresql-statefulset
   namespace: block-break
 spec:
-  serviceName: mariadb-service
+  serviceName: postgresql-service
   replicas: 1
   selector:
     matchLabels:
-      app: mariadb
+      app: postgresql
   template:
     metadata:
       labels:
-        app: mariadb
+        app: postgresql
     spec:
       containers:
-        - name: mariadb
-          image: mariadb:12.3
+        - name: postgresql
+          image: postgres:18.4
           resources:
              requests:
                memory: "1024Mi"
@@ -39,21 +39,21 @@ spec:
                memory: "2048Mi"
                cpu: "1000m"
           ports:
-            - containerPort: 3306
-              name: mysql
+            - containerPort: 5432
+              name: postgresql
           env:
-            - name: MARIADB_ROOT_PASSWORD
-              ## kubectl create secret generic -n block-break maria-db-secret --from-literal=password=ChangeMe!
+            - name: POSTGRES_PASSWORD
+              ## kubectl create secret generic -n block-break postgresql-db-secret --from-literal=password=ChangeMe!
               valueFrom:
                 secretKeyRef:
-                  name: maria-db-secret
+                  name: postgresql-db-secret
                   key: password
           volumeMounts:
-            - name: mariadb-storage
-              mountPath: /var/lib/mysql
+            - name: postgresql-storage
+              mountPath: /var/lib/postgresql
   volumeClaimTemplates:
     - metadata:
-        name: mariadb-storage
+        name: postgresql-storage
         namespace: block-break
       spec:
         accessModes: [ "ReadWriteOnce" ]

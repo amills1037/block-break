@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: block-break
+  annotations:
+      kube-vip.io/loadbalancerIPs: "10.214.0.14"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 27017
+  selector:
+    app: mongodb
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-statefulset
+  namespace: block-break
+spec:
+  serviceName: mongodb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:8.2
+          resources:
+             requests:
+               memory: "1048Mi"
+               cpu: "500m"
+             limits:
+               memory: "2048Mi"
+               cpu: "1000m"
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          env:
+            ## This fixes MongoDB crashing silently after 30s with error 139 because of "tcalloc"
+            - name: GLIBC_TUNABLES
+              value: "glibc.pthread.rseq=1"
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              ## kubectl create secret generic -n block-break mongodb-db-secret --from-literal=password=ChangeMe!
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-db-secret
+                  key: password
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-storage
+        namespace: block-break
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi

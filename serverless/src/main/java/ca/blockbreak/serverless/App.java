@@ -66,7 +66,7 @@ public class App
                     connect.processMessage(message);
 
                     try (StatsDAO statsDAO = new StatsDAO(sm)) {
-                        int count = statsDAO.getGlobalCounter();
+                        int count = statsDAO.getGlobalCount();
 
                         String callbackURL = String.format(
                             "https://%s.execute-api.%s.amazonaws.com/%s",

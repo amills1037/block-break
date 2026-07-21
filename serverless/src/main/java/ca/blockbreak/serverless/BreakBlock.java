@@ -17,7 +17,7 @@ public class BreakBlock {
         System.out.print("Break block: (" + m.x + "," + m.y + "," + m.z + ")");
 
         try (StatsDAO statsDAO = new StatsDAO(secretManager)) {
-            statsDAO.incrementGlobalCounter();
+            statsDAO.incrementGlobalCount();
         }
     }
 }
