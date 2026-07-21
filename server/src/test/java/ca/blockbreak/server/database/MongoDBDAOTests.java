@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MariaDBDAOTests {
+class MongoDBDAOTests {
 
 	/**
      * Test incrementing the global counter.  Should return a value greater than 0
@@ -14,8 +14,8 @@ class MariaDBDAOTests {
     @Test
     public void shouldIncrementGlobalCount() {
         try (var secrets = new SecretsManager()) {
-            try (var mariaDBDAO = new MariaDBDAO(secrets)) {
-                int globalCount = mariaDBDAO.incrementGlobalCount();
+            try (var mongoDBDAO = new MongoDBDAO(secrets)) {
+                int globalCount = mongoDBDAO.incrementGlobalCount();
                 System.out.println("increment globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }
@@ -28,8 +28,8 @@ class MariaDBDAOTests {
     @Test
     public void shouldGetGlobalCount() {
         try (var secrets = new SecretsManager()) {
-            try (var mariaDBDAO = new MariaDBDAO(secrets)) {
-                int globalCount = mariaDBDAO.getGlobalCount();
+            try (var mongoDBDAO = new MongoDBDAO(secrets)) {
+                int globalCount = mongoDBDAO.getGlobalCount();
                 System.out.println("get globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }

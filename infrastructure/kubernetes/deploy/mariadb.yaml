@@ -31,6 +31,13 @@ spec:
       containers:
         - name: mariadb
           image: mariadb:12.3
+          resources:
+             requests:
+               memory: "1024Mi"
+               cpu: "500m"
+             limits:
+               memory: "2048Mi"
+               cpu: "1000m"
           ports:
             - containerPort: 3306
               name: mysql

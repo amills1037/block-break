@@ -42,6 +42,22 @@ public final class SecretsManager implements AutoCloseable {
         return System.getenv("MARIADB_PASSWORD");
     }
 
+    public String getMongoDBHost() {
+        return "10.214.0.14";
+    }
+
+    public String getMongoDBDatabase() {
+        return "block_break_dev";
+    }
+
+    public String getMongoDBUsername() {
+        return "root";
+    }
+
+    public String getMongoDBPassword() {
+        return System.getenv("MONGODB_PASSWORD");
+    }
+
     public String getPostgreSQLHost() {
         return "10.214.0.13";
     }

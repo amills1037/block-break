@@ -10,13 +10,14 @@ public final class MariaDBDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
+    private final Object lock = new Object();
     private static MariaDbPoolDataSource dataSource;
 
     private Connection sqlConnection;
 
     public MariaDBDAO(SecretsManager sm) {
         if (dataSource == null) {
-            synchronized(MariaDBDAO.class) {
+            synchronized(lock) {
                 if (dataSource == null) {
                     try {
                         String host = sm.getMariaDBHost();
@@ -99,6 +100,14 @@ public final class MariaDBDAO implements StatsDAO {
             } catch (SQLException sqle) {
                 throw new DataAccessException(sqle.getMessage(), sqle);
             }
+        }
+    }
+
+    public static void closePool() {
+        //Should we syncronize?
+        if (dataSource != null) {
+            dataSource.close();
+            dataSource = null;
         }
     }
 }

@@ -10,6 +10,7 @@ public final class PostgreSQLDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
+    private final Object lock = new Object();
     private static PGConnectionPoolDataSource dataSource;
 
     private Connection sqlConnection;
@@ -95,5 +96,10 @@ public final class PostgreSQLDAO implements StatsDAO {
                 throw new DataAccessException(sqle.getMessage(), sqle);
             }
         }
+    }
+
+    public static void closePool() {
+        //NOOP
+        // No close for the data source
     }
 }
