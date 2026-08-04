@@ -32,7 +32,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetMariaDBHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("10.214.0.12", sm.getMariaDBHost());
+            assertEquals("10.214.0.3", sm.getMariaDBHost());
         }
     }
 
@@ -60,7 +60,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetPostgreSQLHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("10.214.0.13", sm.getPostgreSQLHost());
+            assertEquals("10.214.0.5", sm.getPostgreSQLHost());
         }
     }
 
