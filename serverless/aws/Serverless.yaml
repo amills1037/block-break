@@ -138,7 +138,7 @@ Resources:
             IntegrationType: AWS_PROXY
             IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ServerlessFunction.Arn}/invocations"
 
-    ServerlessAPIDisonnectRoute:
+    ServerlessAPIDisconnectRoute:
         Type: AWS::ApiGatewayV2::Route
         Properties:
             ApiId: !Ref ServerlessAPIGateway
@@ -153,7 +153,7 @@ Resources:
     ServerlessAPILogGroup:
         Type: AWS::Logs::LogGroup
         Properties:
-            LogGroupName: !Sub "${Stack}ServlerlessAPI"
+            LogGroupName: !Sub "${Stack}ServerlessAPI"
 
     ServerlessAPIStage:
         Type: "AWS::ApiGatewayV2::Stage"

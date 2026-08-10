@@ -13,12 +13,15 @@ function Stats({ ref, setCount }: StatsInterface) {
         console.log("Stats useEffect");
 
         sws.current = new StatsWebSocket(
-            "wss://serverless.blockbreak.ca:443",
-            (c: number) => console.log("count", c),
+            "wss://serverless.blockbreak.ca:443", (c: number) => {
+                setCount(c);
+            }
         );
 
+        sws.current.connect();
+
         return () => {
-            if (sws.current) sws.current.close();
+            sws.current?.disconnect();
         };
     }, [setCount]);
 
