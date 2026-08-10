@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 
 /**
- * Implements a wrapper around the stats table.  Underlying implmentation should be indepenedent.
+ * Implements a wrapper around the stats table.  Underlying implmentation should be indepenedent of the database used.
  *
  */
 public final class StatsDAO implements java.lang.AutoCloseable {
@@ -33,11 +33,8 @@ public final class StatsDAO implements java.lang.AutoCloseable {
     private String tableName;
 
     public StatsDAO(SecretsManager sm) {
-        // AWS Region should not be hardcoded
-        // Region region = Region.CA_CENTRAL_1;
         dbClient =
             DynamoDbClient.builder()
-                // .region(region)
                 .build();
 
         tableName = getTableName(sm);

@@ -32,7 +32,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetMariaDBHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("10.214.0.3", sm.getMariaDBHost());
+            assertEquals("mariadb-service", sm.getMariaDBHost());
         }
     }
 
@@ -58,9 +58,37 @@ class SecretsManagerTests {
     }
 
     @Test
+    public void shouldGetMongoDBHost() {
+        try (SecretsManager sm = new SecretsManager()) {
+            assertEquals("mongodb-service", sm.getMongoDBHost());
+        }
+    }
+
+    @Test
+    public void shouldGetMongoDBDatabase() {
+        try (SecretsManager sm = new SecretsManager()) {
+            assertEquals("block_break_dev", sm.getMongoDBDatabase());
+        }
+    }
+
+    @Test
+    public void shouldGetMongoDBUsername() {
+        try (SecretsManager sm = new SecretsManager()) {
+            assertEquals("root", sm.getMongoDBUsername());
+        }
+    }
+
+    @Test
+    public void shouldGetMongoDBPassword() {
+        try (SecretsManager sm = new SecretsManager()) {
+            assertNotNull(sm.getMongoDBPassword());
+        }
+    }
+
+    @Test
     public void shouldGetPostgreSQLHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("10.214.0.5", sm.getPostgreSQLHost());
+            assertEquals("postgresql-service", sm.getPostgreSQLHost());
         }
     }
 

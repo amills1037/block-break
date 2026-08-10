@@ -4,6 +4,6 @@ import App from "./App";
 describe("App", () => {
   it("renders correctly", () => {
     render(<App />);
-    expect(screen.getByText(/Lorem ipsum/i)).toBeInTheDocument();
+    expect(screen.getByText(/Anthony Mills/i)).toBeInTheDocument();
   });
 });

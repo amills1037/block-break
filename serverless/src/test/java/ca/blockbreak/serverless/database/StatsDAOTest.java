@@ -27,7 +27,7 @@ public final class StatsDAOTest {
      export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
      export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
      export AWS_REGION="ca-central-1"
-     export AWS_ENDPOINT_URL_DYNAMODB=http://10.214.0.8:8000
+     export AWS_ENDPOINT_URL_DYNAMODB=http://dynamodb-service:8000
 
     aws dynamodb create-table \
         --table-name development-block-break-stats \

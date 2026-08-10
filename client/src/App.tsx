@@ -11,7 +11,7 @@ function App() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            console.log("breakBlock:", statsRef.current?.breakBlock());
+            statsRef.current?.breakBlock()
         }, 1000);
 
         return () => {

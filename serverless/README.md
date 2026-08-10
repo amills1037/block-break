@@ -2,7 +2,7 @@
 
 # Install
 
-See /infrastrucure/terraform
+See /infrastructure/terraform
 
 # CI/CD
 

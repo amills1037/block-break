@@ -27,7 +27,7 @@ public final class SecretsManager implements AutoCloseable {
     }
 
     public String getMariaDBHost() {
-        return "10.214.0.3";
+        return "mariadb-service";
     }
 
     public String getMariaDBDatabase() {
@@ -43,7 +43,7 @@ public final class SecretsManager implements AutoCloseable {
     }
 
     public String getMongoDBHost() {
-        return "10.214.0.4";
+        return "mongodb-service";
     }
 
     public String getMongoDBDatabase() {
@@ -59,7 +59,7 @@ public final class SecretsManager implements AutoCloseable {
     }
 
     public String getPostgreSQLHost() {
-        return "10.214.0.5";
+        return "postgresql-service";
     }
 
     public String getPostgreSQLDatabase() {

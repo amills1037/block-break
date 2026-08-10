@@ -76,30 +76,29 @@ public class App
                         );
                         System.out.println("callbackURL: " + callbackURL);
 
-                        ApiGatewayManagementApiClient client =
+                        try (ApiGatewayManagementApiClient client =
                             ApiGatewayManagementApiClient.builder()
                                 .endpointOverride(URI.create(callbackURL))
-                                .build();
+                                .build();) {
+                            data =
+                                "{\"action\": \"global\", \"data\": {\"count\": " +
+                                count +
+                                " }}";
+                            PostToConnectionRequest request =
+                                PostToConnectionRequest.builder()
+                                    .connectionId(
+                                        event.getRequestContext().getConnectionId()
+                                    )
+                                    .data(SdkBytes.fromUtf8String(data))
+                                    .build();
 
-                        data =
-                            "{\"action\": \"global\", \"data\": {\"count\": " +
-                            count +
-                            " }}";
-                        PostToConnectionRequest request =
-                            PostToConnectionRequest.builder()
-                                .connectionId(
-                                    event.getRequestContext().getConnectionId()
-                                )
-                                .data(SdkBytes.fromUtf8String(data))
-                                .build();
-
-                        client.postToConnection(request);
+                            client.postToConnection(request);
+                        }
                     }
                 } else if ("breakblock".equals(routeKey)) {
                     data = "{ \"message\": \"received\" }";
 
                     var breakBlock = new BreakBlock(sm);
-                    //bad will throw null pointer exception
                     breakBlock.processMessage(
                         new BreakBlock.Message(0l, 1, 1, 2, 3)
                     );
