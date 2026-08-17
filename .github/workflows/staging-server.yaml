@@ -47,7 +47,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v7
         with:
-          context: ./src/main/resource/image
+          context: ./src/main/resources/image
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
