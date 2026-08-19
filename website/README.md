@@ -1,3 +1,3 @@
-# Block Break client application
+# Block Break website
 
-http://www.blockbreak.ca/client/
+http://www.blockbreak.ca/
