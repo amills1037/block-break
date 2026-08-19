@@ -15,7 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-website:
+  test-app:
+    name: Test app
     runs-on: ubuntu-latest
     defaults:
       run:

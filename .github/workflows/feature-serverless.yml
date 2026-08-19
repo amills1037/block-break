@@ -15,7 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-website:
+  test-serverless:
+    name: Test serverless
     runs-on: ubuntu-latest
     defaults:
       run:
