@@ -1,0 +1,25 @@
+name: Feature branch, app code
+on:
+  push:
+    branches:
+      - feature/**
+    # paths:
+    #   - app
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-website:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7

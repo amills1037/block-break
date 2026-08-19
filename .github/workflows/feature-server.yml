@@ -1,0 +1,35 @@
+name: Feature branch, server code
+on:
+  push:
+    branches:
+      - feature/**
+    # paths:
+    #   - server
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-website:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto # AWS's version of Java
+          java-version: "25"
+          cache: maven
+
+      - name: Run tests
+        run: mvn test
