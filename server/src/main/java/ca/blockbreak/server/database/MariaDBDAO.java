@@ -10,8 +10,8 @@ public final class MariaDBDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
-    private final Object lock = new Object();
-    private static MariaDbPoolDataSource dataSource;
+    private static final Object lock = new Object();
+    private static volatile MariaDbPoolDataSource dataSource;
 
     private Connection sqlConnection;
 

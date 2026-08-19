@@ -25,8 +25,8 @@ public final class MongoDBDAO implements StatsDAO {
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
     private static final String STAT_FIELD = "stat";
 
-    private final Object lock = new Object();
-    private static MongoClient mongoClient;
+    private static final Object lock = new Object();
+    private static volatile MongoClient mongoClient;
 
     public MongoDatabase mongoDatabase;
 

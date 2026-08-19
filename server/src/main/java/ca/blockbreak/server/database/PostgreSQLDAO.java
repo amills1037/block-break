@@ -10,14 +10,14 @@ public final class PostgreSQLDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
-    private final Object lock = new Object();
-    private static PGConnectionPoolDataSource dataSource;
+    private static final Object lock = new Object();
+    private static volatile PGConnectionPoolDataSource dataSource;
 
     private Connection sqlConnection;
 
     public PostgreSQLDAO(SecretsManager sm) {
         if (dataSource == null) {
-            synchronized(MariaDBDAO.class) {
+            synchronized(lock) {
                 if (dataSource == null) {
                     String host = sm.getPostgreSQLHost();
                     String database = sm.getPostgreSQLDatabase();
