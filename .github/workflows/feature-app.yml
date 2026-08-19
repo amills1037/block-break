@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - feature/**
-    # paths:
-    #   - app
+    paths:
+      - app
 
 permissions:
   id-token: write

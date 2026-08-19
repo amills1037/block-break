@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - feature/**
-    # paths:
-    #   - serverless
+    paths:
+      - serverless
 
 permissions:
   id-token: write
