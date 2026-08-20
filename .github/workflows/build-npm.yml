@@ -30,8 +30,8 @@ jobs:
       - name: Run buld
         run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: production-${{ inputs.dir }}
-          path: ${{ inputs.dir }}/dist/
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: production-${{ inputs.dir }}
+      #     path: ${{ inputs.dir }}/dist/
