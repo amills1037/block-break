@@ -21,10 +21,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Download website
+      - name: Download artifact
         uses: actions/download-artifact@v8
         with:
           name: production-${{ inputs.dir }}
 
-      - name: Deploy production website
+      - name: Run deploy
         run: echo "Deploy ${{ inputs.stage }} website ${{ github.event.pull_request.number }}"
