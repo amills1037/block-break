@@ -51,6 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
       - run: |
           echo "Deploy production website ${{ github.event.pull_request.number }}"
 
@@ -59,5 +62,8 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
-        - run: |
-            echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: |
+          echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"

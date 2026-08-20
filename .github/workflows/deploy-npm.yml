@@ -18,6 +18,9 @@ jobs:
       run:
         working-directory: ./${{ inputs.dir }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
       - name: Download website
         uses: actions/download-artifact@v8
         with:
