@@ -17,6 +17,6 @@ concurrency:
 jobs:
   test-client:
     name: Test client
-    uses: ./.github/templates/test-npm.yml
+    uses: ./.github/workflows/templates/test-npm.yml
     with:
       dir: client

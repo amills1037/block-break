@@ -17,6 +17,6 @@ concurrency:
 jobs:
   test-server:
     name: Test server
-    uses: ./templates/test-maven.yml
+    uses: ./.github/workflows/templates/test-maven.yml
     with:
       dir: server
