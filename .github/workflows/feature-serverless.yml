@@ -1,4 +1,4 @@
-name: Feature branch, client server
+name: Feature branch, serverless code
 on:
   push:
     branches:
@@ -20,4 +20,4 @@ jobs:
     name: Test serverless
     uses: ./.github/workflows/test-maven.yml
     with:
-      dir: server
+      dir: serverless
