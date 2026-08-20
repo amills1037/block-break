@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test ${{ inputs.dir }}
+    name: Build ${{ inputs.dir }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,5 +33,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: production-ready-app
+          name: production-${{ inputs.dir }}
           path: ./dist/ # Adjust this to your build folder
