@@ -35,7 +35,7 @@ jobs:
 
   deploy-staging-website:
     name: Deploy staging website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event.pull_request.merged == true
     needs:
       - test-website
       - build-website
@@ -46,7 +46,7 @@ jobs:
 
   deploy-production-website:
     name: Deploy production website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event.pull_request.merged == true
     needs: deploy-staging-website
     runs-on: ubuntu-latest
     environment: production
