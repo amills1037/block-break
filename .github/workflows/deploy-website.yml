@@ -47,6 +47,7 @@ jobs:
   deploy-production-website:
     name: Deploy production website
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy-staging-website
     runs-on: ubuntu-latest
     environment: production
     steps:
