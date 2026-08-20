@@ -1,4 +1,4 @@
-name: Feature branch, serverless code
+name: Feature branch, client server
 on:
   push:
     branches:
@@ -15,23 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-serverless:
+  test-client:
     name: Test serverless
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./app
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
+      - uses: ./templates/test-maven.yml
         with:
-          distribution: corretto # AWS's version of Java
-          java-version: "25"
-          cache: maven
-
-      ## need external database, DynamoDB
-      # - name: Run tests
-      #   run: mvn test
+          dir: serverless
