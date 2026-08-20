@@ -1,4 +1,4 @@
-name: Deploy staging
+name: Deploy website
 on:
   pull_request:
     types:
