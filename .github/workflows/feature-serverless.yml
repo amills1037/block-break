@@ -4,7 +4,7 @@ on:
     branches:
       - feature/**
     paths:
-      - serverless
+      - serverless/**
 
 permissions:
   id-token: write
@@ -15,10 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-client:
+  test-serverless:
     name: Test serverless
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./templates/test-maven.yml
-        with:
-          dir: serverless
+    uses: ./templates/test-maven.yml
+    with:
+      dir: server

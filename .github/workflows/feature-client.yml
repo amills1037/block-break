@@ -4,7 +4,7 @@ on:
     branches:
       - feature/**
     paths:
-      - client
+      - client/**
 
 permissions:
   id-token: write
@@ -17,8 +17,6 @@ concurrency:
 jobs:
   test-client:
     name: Test client
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./templates/test-npm.yml
-        with:
-          dir: client
+    uses: ./.github/templates/test-npm.yml
+    with:
+      dir: client
