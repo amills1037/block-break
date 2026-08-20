@@ -2,10 +2,10 @@ name: Deploy production
 on:
   pull_request:
     types:
-      - opened
-      - synchronize
-      - reopened
       - closed
+    paths:
+      - .github/workflows/**
+      - website/**
   push:
     branches:
       - main

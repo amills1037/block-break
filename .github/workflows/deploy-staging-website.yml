@@ -5,10 +5,6 @@ on:
       - opened
       - synchronize
       - reopened
-      - closed
-  push:
-    branches:
-      - main
     paths:
       - .github/workflows/**
       - website/**
@@ -24,21 +20,21 @@ concurrency:
 jobs:
   test-website:
     name: Test website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     uses: ./.github/workflows/test-npm.yml
     with:
       dir: website
 
   build-website:
     name: Build website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     uses: ./.github/workflows/build-npm.yml
     with:
       dir: website
 
   deploy-website:
     name: Deploy website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     needs:
       - test-website
       - build-website
