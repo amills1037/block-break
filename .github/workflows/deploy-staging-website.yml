@@ -1,4 +1,4 @@
-name: Deploy Staging
+name: Deploy staging
 on:
   pull_request:
     types:
@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-staging-website-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
