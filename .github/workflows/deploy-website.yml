@@ -5,6 +5,7 @@ on:
       - opened
       - synchronize
       - reopened
+      - closed
     paths:
       - .github/workflows/**
       - website/**
@@ -32,7 +33,7 @@ jobs:
     with:
       dir: website
 
-  deploy-website:
+  deploy-staging-website:
     name: Deploy website
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     needs:
@@ -42,3 +43,20 @@ jobs:
     with:
       dir: website
       stage: staging
+
+  deploy-production-website:
+    name: Deploy production website
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: |
+          echo "Deploy production website ${{ github.event.pull_request.number }}"
+
+  cleanup:
+    name: Cleanup
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+        - run: |
+            echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
