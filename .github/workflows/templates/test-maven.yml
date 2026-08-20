@@ -1,0 +1,37 @@
+on:
+  workflow_call:
+    inputs:
+        dir:
+          description: Directory
+          required: true
+          type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test ${{ inputs.dir }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./${{ inputs.dir }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto # AWS's version of Java
+          java-version: "25"
+          cache: maven
+
+      ## need external databases
+      # - name: Run tests
+      #   run: mvn test
