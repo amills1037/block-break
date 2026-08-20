@@ -1,10 +1,14 @@
 on:
   workflow_call:
     inputs:
-        dir:
-          description: Directory
-          required: true
-          type: string
+      dir:
+        description: Directory
+        required: true
+        type: string
+      stage:
+        description: Stage of the deployment process
+        required: true
+        type: string
 
 jobs:
   test:
