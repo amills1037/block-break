@@ -17,6 +17,6 @@ concurrency:
 jobs:
   test-website:
     name: Test website
-    uses: ./.github/workflows/templates/test-npm.yml
+    uses: ./.github/workflows/test-npm.yml
     with:
       dir: website
