@@ -6,14 +6,6 @@ on:
           required: true
           type: string
 
-permissions:
-  id-token: write
-  contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   test:
     name: Test ${{ inputs.dir }}
@@ -33,10 +25,13 @@ jobs:
           cache-dependency-path: ${{ inputs.dir }}/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run linter
-        run: npm run lint
+      - name: Run buld
+        run: npm run build
 
-      - name: Run tests
-        run: npm run test
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-ready-app
+          path: ./dist/ # Adjust this to your build folder

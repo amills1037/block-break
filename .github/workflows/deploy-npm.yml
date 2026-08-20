@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    inputs:
+      dir:
+        description: Directory
+        required: true
+        type: string
+      stage:
+        description: Stage of the deployment process
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: Test ${{ inputs.dir }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./${{ inputs.dir }}
+    steps:
+      - name: Download website
+        uses: actions/download-artifact@v8
+        with:
+          name: production-website
+
+      - name: Deploy production website
+        run: echo "Deploy ${{ inputs.stage }} website ${{ github.event.pull_request.number }}"
