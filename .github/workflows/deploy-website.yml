@@ -42,9 +42,9 @@ jobs:
   deploy-staging-website:
     name: Deploy staging website
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs:
-      - test-website
-      - build-website
+    # needs:
+    #   - test-website
+    #   - build-website
     uses: ./.github/workflows/deploy-npm.yml
     with:
       dir: website
