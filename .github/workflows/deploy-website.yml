@@ -9,6 +9,12 @@ on:
     paths:
       - .github/workflows/**
       - website/**
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/**
+      - website/**
 
 permissions:
   id-token: write
@@ -35,7 +41,7 @@ jobs:
 
   deploy-staging-website:
     name: Deploy staging website
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - test-website
       - build-website
@@ -46,7 +52,7 @@ jobs:
 
   deploy-production-website:
     name: Deploy production website
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: deploy-staging-website
     runs-on: ubuntu-latest
     environment: production
