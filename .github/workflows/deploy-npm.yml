@@ -26,5 +26,5 @@ jobs:
         with:
           name: production-${{ inputs.dir }}
 
-      - name: Deploy production website
+      - name: Deploy website
         run: echo "Deploy ${{ inputs.stage }} website ${{ github.event.pull_request.number }}"

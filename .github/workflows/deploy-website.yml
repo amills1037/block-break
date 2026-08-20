@@ -34,7 +34,7 @@ jobs:
       dir: website
 
   deploy-staging-website:
-    name: Deploy website
+    name: Deploy staging website
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     needs:
       - test-website
