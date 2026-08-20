@@ -12,16 +12,19 @@ on:
 
 jobs:
   test:
-    name: Test ${{ inputs.dir }}
+    name: Deploy ${{ inputs.dir }}
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./${{ inputs.dir }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
       - name: Download website
         uses: actions/download-artifact@v8
         with:
-          name: production-website
+          name: production-${{ inputs.dir }}
 
       - name: Deploy production website
         run: echo "Deploy ${{ inputs.stage }} website ${{ github.event.pull_request.number }}"

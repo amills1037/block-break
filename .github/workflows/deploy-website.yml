@@ -1,0 +1,69 @@
+name: Deploy staging
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+    paths:
+      - .github/workflows/**
+      - website/**
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-website:
+    name: Test website
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    uses: ./.github/workflows/test-npm.yml
+    with:
+      dir: website
+
+  build-website:
+    name: Build website
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    uses: ./.github/workflows/build-npm.yml
+    with:
+      dir: website
+
+  deploy-staging-website:
+    name: Deploy website
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    needs:
+      - test-website
+      - build-website
+    uses: ./.github/workflows/deploy-npm.yml
+    with:
+      dir: website
+      stage: staging
+
+  deploy-production-website:
+    name: Deploy production website
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy-staging-website
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: |
+          echo "Deploy production website ${{ github.event.pull_request.number }}"
+
+  cleanup:
+    name: Cleanup
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: |
+          echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
