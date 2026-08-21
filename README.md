@@ -1,7 +1,6 @@
 # block-break
 
-[![Production](https://github.com/amills1037/block-break/actions/workflows/production.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/production.yml)
-[![Staging](https://github.com/amills1037/block-break/actions/workflows/staging.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/staging.yml)
+[![Deploy website](https://github.com/amills1037/block-break/actions/workflows/deploy-website.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/deploy-website.yml)
 [![Version](https://img.shields.io/github/v/release/amills1037/block-break)](https://github.com/amills1037/block-break/releases)
 [![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
 
