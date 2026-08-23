@@ -279,6 +279,11 @@ resource "aws_dynamodb_table_item" "serverless_stats_item" {
     StatName : { S : "blocksBroken" },
     Stat : { N : "0" }
   })
+
+  ## without this, the value will be changed back to zero on every apply
+  lifecycle {
+    ignore_changes = [item]
+  }
 }
 
 module "serverless_connection_table" {

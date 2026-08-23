@@ -33,3 +33,15 @@ module "github_role" {
 
   tags = local.tags
 }
+
+module "deploy_s3_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 5.14"
+
+  force_destroy = true ## files are create by the build process
+
+  bucket                   = "deploy-block-break.${var.aws_route53_zone_name}"
+  control_object_ownership = false
+
+  tags = local.tags
+}

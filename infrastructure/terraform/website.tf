@@ -65,6 +65,11 @@ resource "aws_iam_policy" "github_www_s3_policy" {
         Action   = ["s3:PutObject"]
         Effect   = "Allow"
         Resource = "${module.www_s3_bucket.s3_bucket_arn}/*"
+      },
+      {
+        Action   = ["s3:PutObject", "s3:DeleteObject"]
+        Effect   = "Allow"
+        Resource = "${module.deploy_s3_bucket.s3_bucket_arn}/*"
       }
     ]
   })
