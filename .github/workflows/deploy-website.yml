@@ -46,6 +46,7 @@ jobs:
     needs:
       - test-website
       - build-website
+    environment: Staging
     uses: ./.github/workflows/deploy-npm.yml
     with:
       dir: website
@@ -53,6 +54,7 @@ jobs:
   deploy-staging-website:
     name: Deploy staging website
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: Staging
     uses: ./.github/workflows/deploy-npm.yml
     with:
       dir: website
