@@ -1,6 +1,7 @@
 # block-break
 
 [![Deploy website](https://github.com/amills1037/block-break/actions/workflows/deploy-website.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/deploy-website.yml)
+[![Deploy client](https://github.com/amills1037/block-break/actions/workflows/deploy-client.yml/badge.svg)](https://github.com/amills1037/block-break/actions/workflows/deploy-client.yml)
 [![Version](https://img.shields.io/github/v/release/amills1037/block-break)](https://github.com/amills1037/block-break/releases)
 [![License](https://img.shields.io/github/license/amills1037/block-break)](LICENSE)
 
