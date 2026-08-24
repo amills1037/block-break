@@ -56,7 +56,7 @@ jobs:
 
   deploy-staging-website:
     name: Deploy staging website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: Staging
     steps:
@@ -92,7 +92,7 @@ jobs:
 
   deploy-production-website:
     name: Deploy production website
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     needs: deploy-staging-website
     runs-on: ubuntu-latest
     environment: Production
@@ -123,11 +123,25 @@ jobs:
 
   cleanup:
     name: Cleanup
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
+    needs: deploy-staging-website
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          role-session-name: GitHub-Action-Role
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Remove S3 PR folder
+        run: |
+            aws s3 rm \
+            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
+            --recursive
 
       - run: |
           echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
