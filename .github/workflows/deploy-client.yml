@@ -144,7 +144,7 @@ jobs:
   cleanup:
     name: Cleanup
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
-    needs: deploy-staging-website
+    needs: deploy-staging-client
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -160,7 +160,7 @@ jobs:
       - name: Remove S3 PR folder
         run: |
             aws s3 rm \
-            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/pr-${{ github.event.pull_request.number }}/ \
             --recursive
 
       - run: |
