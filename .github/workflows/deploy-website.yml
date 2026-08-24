@@ -81,7 +81,7 @@ jobs:
         run: |
             aws s3 cp \
             s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
-            s3://${{ env.s3_bucket }}/ \
+            s3://${{ vars.s3_bucket }}/ \
             --recursive
 
       - name: Remove S3 PR folder
@@ -118,7 +118,7 @@ jobs:
         run: |
             aws s3 cp \
             s3://${{ vars.s3_deploy_bucket }}/website/production/ \
-            s3://${{ env.s3_bucket }}/ \
+            s3://${{ vars.s3_bucket }}/ \
             --recursive
 
   cleanup:
