@@ -43,4 +43,5 @@ jobs:
 
       - name: Upload artifact to S3 bucket
         run: |
+            ls -R
             aws s3 cp ${{ inputs.dir }}-dist/ s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
