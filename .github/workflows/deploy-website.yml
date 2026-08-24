@@ -46,16 +46,18 @@ jobs:
     needs:
       - test-website
       - build-website
-    environment: Staging
     uses: ./.github/workflows/deploy-npm.yml
     with:
       dir: website
+      aws_region: ${{ vars.AWS_REGION }}
+      s3_deploy_bucket: ${{ vars.S3_DEPLOY_BUCKET }}
+    secrets:
+      iam_role_github: ${{ secrets.IAMROLE_GITHUB }}
 
   deploy-staging-website:
     name: Deploy staging website
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: Staging
-    uses: ./.github/workflows/deploy-npm.yml
+    uses: ./.github/workflows/deploy-env-npm.yml
     with:
       dir: website
       stage: staging

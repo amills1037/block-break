@@ -5,6 +5,17 @@ on:
         description: Directory
         required: true
         type: string
+      aws_region:
+        description: AWS Region
+        required: true
+        type: string
+      s3_deploy_bucket:
+        description: S3 deploy bucket
+        required: true
+        type: string
+    secrets:
+      iam_role_github:
+        required: true
 
 jobs:
   deploy:
@@ -25,10 +36,10 @@ jobs:
       - name: Get AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          role-to-assume: ${{ secrets.iam_role_github }}
           role-session-name: GitHub-Action-Role
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ inputs.aws_region }}
 
       - name: Upload artifact to S3 bucket
         run: |
-            aws s3 cp ${{ inputs.dir }}/dist/ s3://${{ env.S3_DEPLOY_BUCKET }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
+            aws s3 cp ${{ inputs.dir }}/dist/ s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
