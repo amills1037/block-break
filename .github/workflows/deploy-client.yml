@@ -1,4 +1,4 @@
-name: Deploy website
+name: Deploy client
 on:
   pull_request:
     types:
@@ -8,7 +8,8 @@ on:
       - closed
     paths:
       - .github/workflows/**
-      - website/**
+      - client/**
+      - app/**
 
 permissions:
   id-token: write
@@ -20,36 +21,61 @@ permissions:
 #   cancel-in-progress: true
 
 jobs:
-  test-website:
-    name: Test website
+  test-app:
+    name: Test app
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    needs: build-app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: |
+          echo "Test rust app"
+
+  build-app:
+    name: Build app
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - run: |
+          echo "Build rust app"
+
+  test-client:
+    name: Test client
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     uses: ./.github/workflows/test-npm.yml
     with:
-      dir: website
+      dir: client
 
-  build-website:
-    name: Build website
+  build-client:
+    name: Build client
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     uses: ./.github/workflows/build-npm.yml
     with:
-      dir: website
+      dir: client
 
-  deploy-website:
-    name: Copy website
+  deploy-client:
+    name: Deploy client
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     needs:
-      - test-website
-      - build-website
+      - test-client
+      - build-client
+      - test-app
+      - build-app
     uses: ./.github/workflows/deploy-npm.yml
     with:
-      dir: website
+      dir: client
       aws_region: ${{ vars.AWS_REGION }}
       s3_deploy_bucket: ${{ vars.S3_DEPLOY_BUCKET }}
     secrets:
       iam_role_github: ${{ secrets.IAMROLE_GITHUB }}
 
-  deploy-staging-website:
-    name: Deploy staging website
+  deploy-staging-client:
+    name: Deploy staging client
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: Staging
@@ -67,27 +93,27 @@ jobs:
       - name: Upload artifact to S3 staging folder
         run: |
             aws s3 cp \
-            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
-            s3://${{ vars.s3_deploy_bucket }}/website/staging/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/pr-${{ github.event.pull_request.number }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/staging/ \
             --recursive
 
       - name: Upload artifact to S3 bucket
         run: |
             aws s3 cp \
-            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
-            s3://${{ vars.s3_bucket }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/pr-${{ github.event.pull_request.number }}/ \
+            s3://${{ vars.s3_bucket }}/client/ \
             --recursive
 
       - name: Remove S3 PR folder
         run: |
             aws s3 rm \
-            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/pr-${{ github.event.pull_request.number }}/ \
             --recursive
 
-  deploy-production-website:
-    name: Deploy production website
+  deploy-production-client:
+    name: Deploy production client
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-    needs: deploy-staging-website
+    needs: deploy-staging-client
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -104,15 +130,15 @@ jobs:
       - name: Upload artifact to S3 production folder
         run: |
             aws s3 cp \
-            s3://${{ vars.s3_deploy_bucket }}/website/staging/ \
-            s3://${{ vars.s3_deploy_bucket }}/website/production/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/staging/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/production/ \
             --recursive
 
       - name: Upload artifact to S3 bucket
         run: |
             aws s3 cp \
-            s3://${{ vars.s3_deploy_bucket }}/website/production/ \
-            s3://${{ vars.s3_bucket }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/client/production/ \
+            s3://${{ vars.s3_bucket }}/client/ \
             --recursive
 
   cleanup:

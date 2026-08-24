@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "staging_s3_policy" {
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
-      values   = [module.www_distribution.cloudfront_distribution_arn]
+      values   = [module.staging_distribution.cloudfront_distribution_arn]
     }
   }
 }
@@ -137,12 +137,6 @@ module "www_distribution" {
   ]
 
   origin_access_control = {
-    s3_oac = {
-      description      = "CloudFront access to S3"
-      origin_type      = "s3"
-      signing_behavior = "always"
-      signing_protocol = "sigv4"
-    },
     www_s3_oac = {
       description      = "CloudFront access to S3"
       origin_type      = "s3"
@@ -223,14 +217,14 @@ module "staging_distribution" {
   # }
 
   origin = {
-    www_s3_bucket = {
-      domain_name               = module.www_s3_bucket.s3_bucket_bucket_regional_domain_name
+    staging_s3_bucket = {
+      domain_name               = module.staging_s3_bucket.s3_bucket_bucket_regional_domain_name
       origin_access_control_key = "staging_s3_oac"
     }
   }
 
   default_cache_behavior = {
-    target_origin_id       = "www_s3_bucket"
+    target_origin_id       = "staging_s3_bucket"
     viewer_protocol_policy = "redirect-to-https"
     cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # AWS Managed-CachingDisabled
 
@@ -329,3 +323,45 @@ module "website_zone" {
     }
   }
 }
+
+# module "website_zone" {
+#   source  = "terraform-aws-modules/route53/aws//modules/records"
+#   version = "~> 1.1"
+
+#   create_zone = false
+
+#   name = var.aws_route53_zone_name
+
+#   records = [
+
+#   ]
+#     {
+#       name: "apex"
+#       full_name = var.aws_route53_zone_name
+#       type      = "A"
+
+#       alias = {
+#         name    = module.www_distribution.cloudfront_distribution_domain_name
+#         zone_id = "Z2FDTNDATAQYW2"
+#       }
+#     }
+
+#     www = {
+#       type = "A"
+
+#       alias = {
+#         name    = module.www_distribution.cloudfront_distribution_domain_name
+#         zone_id = "Z2FDTNDATAQYW2"
+#       }
+#     }
+
+#     staging = {
+#       type = "A"
+
+#       alias = {
+#         name    = module.staging_distribution.cloudfront_distribution_domain_name
+#         zone_id = "Z2FDTNDATAQYW2"
+#       }
+#     }
+#   }
+# }
