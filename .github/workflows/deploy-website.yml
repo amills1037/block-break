@@ -20,9 +20,10 @@ permissions:
   id-token: write
   contents: read
 
-concurrency:
-  group: ${{ github.event_name }}-${{ github.event.action}}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+## concurrency should be on a per job level
+# concurrency:
+#   group: ${{ github.event_name }}-${{ github.event.action}}-${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 jobs:
   test-website:
@@ -39,13 +40,24 @@ jobs:
     with:
       dir: website
 
+  deploy-website:
+    name: Deploy website
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    needs:
+      - test-website
+      - build-website
+    uses: ./.github/workflows/deploy-npm.yml
+    with:
+      dir: website
+      aws_region: ${{ vars.AWS_REGION }}
+      s3_deploy_bucket: ${{ vars.S3_DEPLOY_BUCKET }}
+    secrets:
+      iam_role_github: ${{ secrets.IAMROLE_GITHUB }}
+
   deploy-staging-website:
     name: Deploy staging website
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # needs:
-    #   - test-website
-    #   - build-website
-    uses: ./.github/workflows/deploy-npm.yml
+    uses: ./.github/workflows/deploy-env-npm.yml
     with:
       dir: website
       stage: staging
@@ -55,7 +67,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: deploy-staging-website
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

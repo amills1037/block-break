@@ -5,13 +5,20 @@ on:
         description: Directory
         required: true
         type: string
-      stage:
-        description: Stage of the deployment process
+      aws_region:
+        description: AWS Region
         required: true
         type: string
+      s3_deploy_bucket:
+        description: S3 deploy bucket
+        required: true
+        type: string
+    secrets:
+      iam_role_github:
+        required: true
 
 jobs:
-  test:
+  deploy:
     name: Deploy ${{ inputs.dir }}
     runs-on: ubuntu-latest
     defaults:
@@ -21,10 +28,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      # - name: Download artifact
-      #   uses: actions/download-artifact@v8
-      #   with:
-      #     name: production-${{ inputs.dir }}
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: pull-request-${{ inputs.dir }}
+          path: ${{ inputs.dir }}-dist
 
-      - name: Run deploy
-        run: echo "Deploy ${{ inputs.stage }} website ${{ github.event.pull_request.number }}"
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.iam_role_github }}
+          role-session-name: GitHub-Action-Role
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Upload artifact to S3 bucket
+        run: |
+            ls -R ../${{ inputs.dir }}-dist/
+            aws s3 cp ../${{ inputs.dir }}-dist/ s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive

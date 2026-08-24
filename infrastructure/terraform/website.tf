@@ -11,6 +11,7 @@ module "acm" {
 
   subject_alternative_names = [
     format("www.%s", data.aws_route53_zone.selected.name),
+    format("staging.%s", data.aws_route53_zone.selected.name),
   ]
 
   validation_method   = "DNS"
@@ -20,7 +21,7 @@ module "acm" {
   tags = local.tags
 }
 
-# main website is served from here
+# production website is served from here
 module "www_s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "~> 5.14"
@@ -36,11 +37,46 @@ module "www_s3_bucket" {
   tags = local.tags
 }
 
+# staging website is served from here
+module "staging_s3_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 5.14"
+
+  force_destroy = true ## files are create by the build process
+
+  bucket                   = "cloudfront.staging.${var.aws_route53_zone_name}"
+  control_object_ownership = false
+
+  attach_policy = true
+  policy        = data.aws_iam_policy_document.staging_s3_policy.json
+
+  tags = local.tags
+}
+
 data "aws_iam_policy_document" "www_s3_policy" {
   # Origin Access Control
   statement {
     actions   = ["s3:GetObject"]
     resources = ["${module.www_s3_bucket.s3_bucket_arn}/*"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceArn"
+      values   = [module.www_distribution.cloudfront_distribution_arn]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "staging_s3_policy" {
+  # Origin Access Control
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${module.staging_s3_bucket.s3_bucket_arn}/*"]
 
     principals {
       type        = "Service"
@@ -65,6 +101,16 @@ resource "aws_iam_policy" "github_www_s3_policy" {
         Action   = ["s3:PutObject"]
         Effect   = "Allow"
         Resource = "${module.www_s3_bucket.s3_bucket_arn}/*"
+      },
+      {
+        Action   = ["s3:PutObject"]
+        Effect   = "Allow"
+        Resource = "${module.staging_s3_bucket.s3_bucket_arn}/*"
+      },
+      {
+        Action   = ["s3:PutObject", "s3:DeleteObject"]
+        Effect   = "Allow"
+        Resource = "${module.deploy_s3_bucket.s3_bucket_arn}/*"
       }
     ]
   })
@@ -78,7 +124,7 @@ resource "aws_iam_role_policy_attachment" "attach_github_www_s3_policy" {
 module "www_distribution" {
   source = "terraform-aws-modules/cloudfront/aws"
 
-  comment = "Block Break CloudFront"
+  comment = "Block Break WWW CloudFront"
 
   aliases = [
     var.aws_route53_zone_name,
@@ -87,6 +133,12 @@ module "www_distribution" {
 
   origin_access_control = {
     s3_oac = {
+      description      = "CloudFront access to S3"
+      origin_type      = "s3"
+      signing_behavior = "always"
+      signing_protocol = "sigv4"
+    },
+    www_s3_oac = {
       description      = "CloudFront access to S3"
       origin_type      = "s3"
       signing_behavior = "always"
@@ -101,7 +153,7 @@ module "www_distribution" {
   origin = {
     www_s3_bucket = {
       domain_name               = module.www_s3_bucket.s3_bucket_bucket_regional_domain_name
-      origin_access_control_key = "s3_oac"
+      origin_access_control_key = "www_s3_oac"
     }
   }
 
@@ -112,7 +164,7 @@ module "www_distribution" {
 
     function_association = {
       viewer-request = {
-        function_key = "append_index"
+        function_arn = aws_cloudfront_function.append_index.arn
       }
     }
   }
@@ -140,32 +192,98 @@ module "www_distribution" {
     },
   ]
 
-  cloudfront_functions = {
-    append_index = {
-      runtime = "cloudfront-js-2.0"
-      comment = "Applend index.html to directories"
-      code    = <<-EOT
-        function handler(event) {
-            var request = event.request;
-            var uri = request.uri;
+  tags = local.tags
+}
 
-            // If the URI ends with a slash, append 'index.html'
-            if (uri.endsWith('/')) {
-                request.uri += 'index.html';
-            }
-            // If the URI does not end with a slash and has no file extension, append '/index.html'
-            else if (!uri.includes('.')) {
-                request.uri += '/index.html';
-            }
+module "staging_distribution" {
+  source = "terraform-aws-modules/cloudfront/aws"
 
-            return request;
-        }
-        EOT
-      publish = true
+  comment = "Block Break Staging CloudFront"
+
+  aliases = [
+    "staging.${var.aws_route53_zone_name}"
+  ]
+
+  origin_access_control = {
+    staging_s3_oac = {
+      description      = "CloudFront access to S3"
+      origin_type      = "s3"
+      signing_behavior = "always"
+      signing_protocol = "sigv4"
     }
   }
 
+  # logging_config = {
+  #   bucket = "logs-my-cdn.s3.amazonaws.com"
+  # }
+
+  origin = {
+    www_s3_bucket = {
+      domain_name               = module.www_s3_bucket.s3_bucket_bucket_regional_domain_name
+      origin_access_control_key = "staging_s3_oac"
+    }
+  }
+
+  default_cache_behavior = {
+    target_origin_id       = "www_s3_bucket"
+    viewer_protocol_policy = "redirect-to-https"
+    cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # AWS Managed-CachingDisabled
+
+    function_association = {
+      viewer-request = {
+        function_arn = aws_cloudfront_function.append_index.arn
+      }
+    }
+  }
+
+  default_root_object = "index.html"
+
+  viewer_certificate = {
+    acm_certificate_arn      = module.acm.acm_certificate_arn
+    minimum_protocol_version = "TLSv1.3_2025"
+    ssl_support_method       = "sni-only"
+  }
+
+  custom_error_response = [
+    {
+      error_code            = 404
+      response_code         = 404
+      response_page_path    = "/error.html"
+      error_caching_min_ttl = 300
+    },
+    {
+      error_code            = 403
+      response_code         = 404
+      response_page_path    = "/error.html"
+      error_caching_min_ttl = 300
+    },
+  ]
+
   tags = local.tags
+}
+
+resource "aws_cloudfront_function" "append_index" {
+  name    = "append_index"
+  runtime = "cloudfront-js-2.0"
+  comment = "Applend index.html to directories"
+  code    = <<-EOT
+    function handler(event) {
+        var request = event.request;
+        var uri = request.uri;
+
+        // If the URI ends with a slash, append 'index.html'
+        if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+        }
+        // If the URI does not end with a slash and has no file extension, append '/index.html'
+        else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+        }
+
+        return request;
+    }
+    EOT
+  publish = true
 }
 
 module "website_zone" {
@@ -188,13 +306,21 @@ module "website_zone" {
     }
 
     www = {
-      type = "CNAME"
+      type = "A"
 
-      records = [
-        module.www_distribution.cloudfront_distribution_domain_name
-      ]
+      alias = {
+        name    = module.www_distribution.cloudfront_distribution_domain_name
+        zone_id = "Z2FDTNDATAQYW2"
+      }
+    }
 
-      ttl = 300
+    staging = {
+      type = "A"
+
+      alias = {
+        name    = module.staging_distribution.cloudfront_distribution_domain_name
+        zone_id = "Z2FDTNDATAQYW2"
+      }
     }
   }
 }
