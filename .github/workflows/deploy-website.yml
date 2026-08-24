@@ -66,9 +66,9 @@ jobs:
       - name: Get AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.iam_role_github }}
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
           role-session-name: GitHub-Action-Role
-          aws-region: ${{ vars.aws_region }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload artifact to S3 staging folder
         run: |
@@ -77,11 +77,17 @@ jobs:
             s3://${{ vars.s3_deploy_bucket }}/website/staging/ \
             --recursive
 
-      - name: Upload artifact to S3 staging bucket
+      - name: Upload artifact to S3 bucket
         run: |
             aws s3 cp \
             s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
             s3://${{ env.s3_bucket }}/ \
+            --recursive
+
+      - name: Remove S3 PR folder
+        run: |
+            aws s3 rm \
+            s3://${{ vars.s3_deploy_bucket }}/website/pr-${{ github.event.pull_request.number }}/ \
             --recursive
 
   deploy-production-website:
@@ -97,9 +103,9 @@ jobs:
       - name: Get AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ secrets.iam_role_github }}
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
           role-session-name: GitHub-Action-Role
-          aws-region: ${{ vars.aws_region }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload artifact to S3 production folder
         run: |
@@ -108,7 +114,7 @@ jobs:
             s3://${{ vars.s3_deploy_bucket }}/website/production/ \
             --recursive
 
-      - name: Upload artifact to S3 staging bucket
+      - name: Upload artifact to S3 bucket
         run: |
             aws s3 cp \
             s3://${{ vars.s3_deploy_bucket }}/website/production/ \
@@ -123,7 +129,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Remove S3 PR folder
-        run: |
+      - run: |
           echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
-            aws s3 rm s3://${{ vars.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
