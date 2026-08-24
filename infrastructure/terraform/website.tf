@@ -91,8 +91,8 @@ data "aws_iam_policy_document" "staging_s3_policy" {
   }
 }
 
-resource "aws_iam_policy" "github_www_s3_policy" {
-  name        = "github-www-s3-policy"
+resource "aws_iam_policy" "github_website_s3_policy" {
+  name        = "github-website-s3-policy"
   description = "Allows specific actions"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -108,6 +108,11 @@ resource "aws_iam_policy" "github_www_s3_policy" {
         Resource = "${module.staging_s3_bucket.s3_bucket_arn}/*"
       },
       {
+        Action   = ["s3:ListBucket"]
+        Effect   = "Allow"
+        Resource = "${module.deploy_s3_bucket.s3_bucket_arn}"
+      },
+      {
         Action   = ["s3:PutObject", "s3:DeleteObject"]
         Effect   = "Allow"
         Resource = "${module.deploy_s3_bucket.s3_bucket_arn}/*"
@@ -116,9 +121,9 @@ resource "aws_iam_policy" "github_www_s3_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "attach_github_www_s3_policy" {
+resource "aws_iam_role_policy_attachment" "attach_github_website_s3_policy" {
   role       = module.github_role.name
-  policy_arn = resource.aws_iam_policy.github_www_s3_policy.arn
+  policy_arn = resource.aws_iam_policy.github_website_s3_policy.arn
 }
 
 module "www_distribution" {
