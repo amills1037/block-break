@@ -25,16 +25,17 @@ jobs:
       run:
         working-directory: ./${{ inputs.dir }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      # - name: Checkout code
+      #   uses: actions/checkout@v7
 
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
           name: pull-request-${{ inputs.dir }}
+          path: ${{ inputs.dir }}-dist
 
       - name: Get AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.iam_role_github }}
           role-session-name: GitHub-Action-Role
@@ -42,4 +43,4 @@ jobs:
 
       - name: Upload artifact to S3 bucket
         run: |
-            aws s3 cp ${{ inputs.dir }}/dist/ s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
+            aws s3 cp ${{ inputs.dir }}-dist/ s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/ --recursive
