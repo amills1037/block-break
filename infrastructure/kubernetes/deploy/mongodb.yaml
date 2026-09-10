@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: mongodb-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.14"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 27017
+    - protocol: TCP
+      port: 27017
   selector:
     app: mongodb
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: mongodb
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: mongodb
           image: mongo:8.2
@@ -42,7 +49,7 @@ spec:
             - containerPort: 27017
               name: mongodb
           env:
-            ## This fixes MongoDB crashing silently after 30s with error 139 because of "tcalloc"
+            ## This fixes MongoDB crashing silently after 30s with error 139 because of "tcmalloc"
             - name: GLIBC_TUNABLES
               value: "glibc.pthread.rseq=1"
             - name: MONGO_INITDB_ROOT_USERNAME
@@ -56,12 +63,14 @@ spec:
           volumeMounts:
             - name: mongodb-storage
               mountPath: /data/db
+              subPath: mongodb
   volumeClaimTemplates:
     - metadata:
         name: mongodb-storage
         namespace: block-break
       spec:
         accessModes: [ "ReadWriteOnce" ]
+        storageClassName: database-storage
         resources:
           requests:
             storage: 10Gi

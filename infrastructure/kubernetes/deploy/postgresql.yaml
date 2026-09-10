@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: postgresql-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.13"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 5432
+    - protocol: TCP
+      port: 5432
   selector:
     app: postgresql
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: postgresql
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: postgresql
           image: postgres:18.4
@@ -51,12 +58,14 @@ spec:
           volumeMounts:
             - name: postgresql-storage
               mountPath: /var/lib/postgresql
+              subPath: postgresql
   volumeClaimTemplates:
     - metadata:
         name: postgresql-storage
         namespace: block-break
       spec:
         accessModes: [ "ReadWriteOnce" ]
+        storageClassName: database-storage
         resources:
           requests:
             storage: 10Gi
