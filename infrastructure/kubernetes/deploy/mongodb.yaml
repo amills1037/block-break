@@ -63,14 +63,45 @@ spec:
           volumeMounts:
             - name: mongodb-storage
               mountPath: /data/db
-              subPath: mongodb
-  volumeClaimTemplates:
-    - metadata:
-        name: mongodb-storage
-        namespace: block-break
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: database-storage
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: mongodb-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: block-break-mongodb-storage-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  csi:
+    driver: iscsi.csi.k8s.io
+    volumeHandle: iscsi-192.168.7.227-block-break:mongodb-1  # Must be globally unique
+    volumeAttributes:
+      targetPortal: 192.168.7.227:3260
+      portals: "[]"
+      iqn: iqn.2026-09.block-break:mongodb
+      lun: "1"
+      iscsiInterface: "default"
+      discovery: "true"
+      discoveryCHAPAuth: "true"
+      sessionCHAPAuth: "false"
+      fsType: "ext4"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-storage-pvc
+  namespace: block-break
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  volumeName: block-break-mongodb-storage-pv
+  resources:
+    requests:
+      storage: 10Gi
