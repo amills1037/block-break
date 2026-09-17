@@ -64,10 +64,10 @@ jobs:
       - name: Copy jar file
         run: |
           ls ./server-target/
-          ls ./server/src/main/resources/images/
-          mkdir -p ./server/src/main/resources/images/target
-          cp server-target/*.jar ./server/src/main/resources/images/target
-          ls ./server/src/main/resources/images/target
+          ls ./server/src/main/resources/image/
+          mkdir -p ./server/src/main/resources/image/target
+          cp server-target/*.jar ./server/src/main/resources/image/target
+          ls ./server/src/main/resources/image/target
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
@@ -123,11 +123,11 @@ jobs:
         with:
           role-to-assume: ${{ secrets.iam_role_github }}
           role-session-name: GitHub-Action-Role
-          aws-region: ${{ inputs.aws_region }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload artifact to S3 bucket
         run: |
-            aws s3 cp ../${{ inputs.dir }}-target/*.jar s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/
+            aws s3 cp ../serverless-target/*.jar s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/
 
   # cleanup:
   #   name: Cleanup
