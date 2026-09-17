@@ -77,7 +77,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository_owner }}/server
+          images: ghcr.io/${{ github.repository_owner }}/block-break-server
           tags: |
               type=sha
               type=raw,value=pr-${{ github.event.pull_request.number }}
@@ -94,7 +94,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest@v4
         with:
-          subject-name: ghcr.io/${{ github.repository_owner }}/server
+          subject-name: ghcr.io/${{ github.repository_owner }}/block-break-server
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload artifact to S3 bucket
         run: |
-            aws s3 cp ../serverless-target/*.jar s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/
+            aws s3 cp ./serverless-target/*.jar s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/
 
   # cleanup:
   #   name: Cleanup
