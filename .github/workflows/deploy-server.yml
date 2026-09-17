@@ -14,6 +14,8 @@ on:
 permissions:
   id-token: write
   contents: read
+  packages: write
+  attestations: write
 
 jobs:
   test-server:
@@ -124,7 +126,9 @@ jobs:
 
       - name: Upload artifact to S3 bucket
         run: |
-            aws s3 cp ./serverless-target/*.jar s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/
+            ls ./serverless-target/*.jar
+            aws s3 cp ./serverless-target/*.jar \
+            s3://${{ vars.S3_DEPLOY_BUCKET }}/serverless/pr-${{ github.event.pull_request.number }}/
 
   # cleanup:
   #   name: Cleanup
