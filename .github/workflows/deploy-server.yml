@@ -58,7 +58,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
-          name: pull-request-${{ inputs.dir }}
+          name: pull-request-server
           path: server-target/
 
       - name: Copy jar file
@@ -115,7 +115,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
-          name: pull-request-${{ inputs.dir }}
+          name: pull-request-serverless
           path: serverless-target/
 
       - name: Get AWS credentials
