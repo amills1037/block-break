@@ -129,31 +129,35 @@ jobs:
         run: |
             aws s3 cp ../${{ inputs.dir }}-target/*.jar s3://${{ inputs.s3_deploy_bucket }}/${{ inputs.dir }}/pr-${{ github.event.pull_request.number }}/
 
-  cleanup:
-    name: Cleanup
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
-    needs: deploy-staging-client
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+  # cleanup:
+  #   name: Cleanup
+  #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
+  #   needs:
+  #     - deploy-staging-server
+  #     - deploy-staging-serverless
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v7
 
-      - name: Get AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
-          role-session-name: GitHub-Action-Role
-          aws-region: ${{ vars.AWS_REGION }}
+  #     - name: Get AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v6
+  #       with:
+  #         role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+  #         role-session-name: GitHub-Action-Role
+  #         aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Remove S3 PR folder
-        run: |
-            aws s3 rm \
-            s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
-            --recursive
+  #     - name: Remove S3 PR folder
+  #       run: |
+  #           aws s3 rm \
+  #           s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
+  #           --recursive
 
-      - name: Remove image
-        run: |
-            echo "Remove container image"
+  #     - name: Remove image
+  #       run: |
+  #           ## need to consider this, if it's promoted, remove tag, if it's not, remove tag and image
+  #           # or just remove the tag and clean up unused images another way
+  #           echo "Remove container image tag"
 
-      - run: |
-          echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
+  #     - run: |
+  #         echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
