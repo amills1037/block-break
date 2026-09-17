@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: postgresql-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.13"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 5432
+    - protocol: TCP
+      port: 5432
   selector:
     app: postgresql
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: postgresql
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: postgresql
           image: postgres:18.4
@@ -51,12 +58,45 @@ spec:
           volumeMounts:
             - name: postgresql-storage
               mountPath: /var/lib/postgresql
-  volumeClaimTemplates:
-    - metadata:
-        name: postgresql-storage
-        namespace: block-break
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: postgresql-storage
+          persistentVolumeClaim:
+            claimName: postgresql-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: block-break-postgresql-storage-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  csi:
+    driver: iscsi.csi.k8s.io
+    volumeHandle: iscsi-192.168.7.227-block-break:postgresql-1  # Must be globally unique
+    volumeAttributes:
+      targetPortal: 192.168.7.227:3260
+      portals: "[]"
+      iqn: iqn.2026-09.block-break:postgresql
+      lun: "1"
+      iscsiInterface: "default"
+      discovery: "true"
+      discoveryCHAPAuth: "true"
+      sessionCHAPAuth: "false"
+      fsType: "ext4"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-storage-pvc
+  namespace: block-break
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  volumeName: block-break-postgresql-storage-pv
+  resources:
+    requests:
+      storage: 10Gi

@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: mongodb-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.14"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 27017
+    - protocol: TCP
+      port: 27017
   selector:
     app: mongodb
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: mongodb
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: mongodb
           image: mongo:8.2
@@ -42,7 +49,7 @@ spec:
             - containerPort: 27017
               name: mongodb
           env:
-            ## This fixes MongoDB crashing silently after 30s with error 139 because of "tcalloc"
+            ## This fixes MongoDB crashing silently after 30s with error 139 because of "tcmalloc"
             - name: GLIBC_TUNABLES
               value: "glibc.pthread.rseq=1"
             - name: MONGO_INITDB_ROOT_USERNAME
@@ -56,12 +63,45 @@ spec:
           volumeMounts:
             - name: mongodb-storage
               mountPath: /data/db
-  volumeClaimTemplates:
-    - metadata:
-        name: mongodb-storage
-        namespace: block-break
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: mongodb-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: block-break-mongodb-storage-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  csi:
+    driver: iscsi.csi.k8s.io
+    volumeHandle: iscsi-192.168.7.227-block-break:mongodb-1  # Must be globally unique
+    volumeAttributes:
+      targetPortal: 192.168.7.227:3260
+      portals: "[]"
+      iqn: iqn.2026-09.block-break:mongodb
+      lun: "1"
+      iscsiInterface: "default"
+      discovery: "true"
+      discoveryCHAPAuth: "true"
+      sessionCHAPAuth: "false"
+      fsType: "ext4"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-storage-pvc
+  namespace: block-break
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  volumeName: block-break-mongodb-storage-pv
+  resources:
+    requests:
+      storage: 10Gi

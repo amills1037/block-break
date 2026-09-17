@@ -32,7 +32,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetMariaDBHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("mariadb-service", sm.getMariaDBHost());
+            assertEquals("mariadb-service.block-break", sm.getMariaDBHost());
         }
     }
 
@@ -60,7 +60,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetMongoDBHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("mongodb-service", sm.getMongoDBHost());
+            assertEquals("mongodb-service.block-break", sm.getMongoDBHost());
         }
     }
 
@@ -88,7 +88,7 @@ class SecretsManagerTests {
     @Test
     public void shouldGetPostgreSQLHost() {
         try (SecretsManager sm = new SecretsManager()) {
-            assertEquals("postgresql-service", sm.getPostgreSQLHost());
+            assertEquals("postgresql-service.block-break", sm.getPostgreSQLHost());
         }
     }
 

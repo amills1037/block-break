@@ -1,4 +1,4 @@
-name: Deploy client
+name: Deploy app and client
 on:
   pull_request:
     types:

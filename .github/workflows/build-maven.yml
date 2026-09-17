@@ -7,8 +7,8 @@ on:
           type: string
 
 jobs:
-  test:
-    name: Test ${{ inputs.dir }}
+  build:
+    name: Build ${{ inputs.dir }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,6 +24,12 @@ jobs:
           java-version: "25"
           cache: maven
 
-      ## need external databases, should setup maven surefire
-      # - name: Run tests
-      #   run: mvn test
+      - name: Build package
+        run: |
+          mvn package -DskipTests
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: pull-request-${{ inputs.dir }}
+          path: ${{ inputs.dir }}/target/

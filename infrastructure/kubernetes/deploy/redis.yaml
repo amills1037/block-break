@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: redis-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.15"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 6379
+    - protocol: TCP
+      port: 6379
   selector:
     app: redis
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: redis
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: redis
           image: redis:8.8-alpine

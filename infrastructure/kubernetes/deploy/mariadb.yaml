@@ -3,12 +3,10 @@ kind: Service
 metadata:
   name: mariadb-service
   namespace: block-break
-  annotations:
-      kube-vip.io/loadbalancerIPs: "10.214.0.12"
 spec:
-  type: LoadBalancer
   ports:
-    - port: 3306
+    - protocol: TCP
+      port: 3306
   selector:
     app: mariadb
 ---
@@ -28,6 +26,15 @@ spec:
       labels:
         app: mariadb
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
       containers:
         - name: mariadb
           image: mariadb:12.3
@@ -51,12 +58,45 @@ spec:
           volumeMounts:
             - name: mariadb-storage
               mountPath: /var/lib/mysql
-  volumeClaimTemplates:
-    - metadata:
-        name: mariadb-storage
-        namespace: block-break
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        resources:
-          requests:
-            storage: 10Gi
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: mariadb-storage-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: block-break-mariadb-storage-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  csi:
+    driver: iscsi.csi.k8s.io
+    volumeHandle: iscsi-192.168.7.227-block-break:mariadb-1  # Must be globally unique
+    volumeAttributes:
+      targetPortal: 192.168.7.227:3260
+      portals: "[]"
+      iqn: iqn.2026-09.block-break:mariadb
+      lun: "1"
+      iscsiInterface: "default"
+      discovery: "true"
+      discoveryCHAPAuth: "true"
+      sessionCHAPAuth: "false"
+      fsType: "ext4"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-storage-pvc
+  namespace: block-break
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: database-storage
+  volumeName: block-break-mariadb-storage-pv
+  resources:
+    requests:
+      storage: 10Gi
