@@ -126,9 +126,9 @@ jobs:
 
       - name: Upload artifact to S3 bucket
         run: |
-            ls ./serverless-target/*.jar
-            aws s3 cp ./serverless-target/*.jar \
-            s3://${{ vars.S3_DEPLOY_BUCKET }}/serverless/pr-${{ github.event.pull_request.number }}/
+            aws s3 cp ./serverless-target/ \
+            s3://${{ vars.S3_DEPLOY_BUCKET }}/serverless/pr-${{ github.event.pull_request.number }}/ \
+            --recursive --exclude "*/*" --include "*.jar"
 
   # cleanup:
   #   name: Cleanup
