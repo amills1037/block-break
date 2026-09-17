@@ -24,6 +24,6 @@ jobs:
           java-version: "25"
           cache: maven
 
-      ## need external databases
+      ## need external databases, should setup maven surefire
       # - name: Run tests
       #   run: mvn test
