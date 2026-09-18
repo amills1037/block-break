@@ -130,35 +130,82 @@ jobs:
             s3://${{ vars.S3_DEPLOY_BUCKET }}/serverless/pr-${{ github.event.pull_request.number }}/ \
             --recursive --exclude "*/*" --include "*.jar"
 
-  # cleanup:
-  #   name: Cleanup
-  #   if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
-  #   needs:
-  #     - deploy-staging-server
-  #     - deploy-staging-serverless
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v7
+  deploy-staging-server:
+    name: Deploy staging server
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: Staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
 
-  #     - name: Get AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v6
-  #       with:
-  #         role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
-  #         role-session-name: GitHub-Action-Role
-  #         aws-region: ${{ vars.AWS_REGION }}
+      - name: Tag PR tag with staging tag
+        run: |
+          docker buildx imagetools create \
+          ghcr.io/${{ github.repository_owner }}/block-break-server:pr-{{ github.event.pull_request.number }} \
+          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
 
-  #     - name: Remove S3 PR folder
-  #       run: |
-  #           aws s3 rm \
-  #           s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
-  #           --recursive
+  deploy-staging-serverless:
+    name: Deploy staging serverless
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: Staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
 
-  #     - name: Remove image
-  #       run: |
-  #           ## need to consider this, if it's promoted, remove tag, if it's not, remove tag and image
-  #           # or just remove the tag and clean up unused images another way
-  #           echo "Remove container image tag"
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          role-session-name: GitHub-Action-Role
+          aws-region: ${{ vars.AWS_REGION }}
 
-  #     - run: |
-  #         echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
+      - name: Upload artifact to S3 staging folder
+        run: |
+            aws s3 cp \
+            s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
+            s3://${{ vars.s3_deploy_bucket }}/serverless/staging/ \
+            --recursive
+
+      - name: Deploy api gateway
+        run: |
+            echo "Deploy api gateway"
+
+      - name: Remove S3 PR folder
+        run: |
+            aws s3 rm \
+            s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
+            --recursive
+
+  cleanup:
+    name: Cleanup
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == false
+    needs:
+      - deploy-staging-server
+      - deploy-staging-serverless
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
+          role-session-name: GitHub-Action-Role
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Remove S3 PR folder
+        run: |
+            aws s3 rm \
+            s3://${{ vars.s3_deploy_bucket }}/serverless/pr-${{ github.event.pull_request.number }}/ \
+            --recursive
+
+      - name: Remove image
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-tags: pr-${{ github.event.pull_request.number }}
+
+      - run: |
+          echo "Clean up, clean up, everybody clean up... ${{ github.event.pull_request.number }}"
