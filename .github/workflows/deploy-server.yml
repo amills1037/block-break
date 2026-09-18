@@ -142,7 +142,7 @@ jobs:
       - name: Tag PR tag with staging tag
         run: |
           docker buildx imagetools create \
-          ghcr.io/${{ github.repository_owner }}/block-break-server:pr-{{ github.event.pull_request.number }} \
+          ghcr.io/${{ github.repository_owner }}/block-break-server:pr-${{ github.event.pull_request.number }} \
           --tag ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
 
       - name: Remove image
