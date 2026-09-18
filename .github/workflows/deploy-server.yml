@@ -145,6 +145,12 @@ jobs:
           ghcr.io/${{ github.repository_owner }}/block-break-server:pr-{{ github.event.pull_request.number }} \
           --tag ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
 
+      - name: Remove image
+        uses: dataaxiom/ghcr-cleanup-action@v1 ## no offical action to remove tags, docker does not have an option to
+                                               ## remove remote tags either
+        with:
+          delete-tags: pr-${{ github.event.pull_request.number }}
+
   deploy-staging-serverless:
     name: Deploy staging serverless
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
