@@ -156,7 +156,7 @@ jobs:
         uses: dataaxiom/ghcr-cleanup-action@v1 ## no offical action to remove tags, docker does not have an option to
                                                ## remove remote tags either
         with:
-          package: ${{ github.repository_owner }}/block-break-server
+          package: block-break-server
           delete-tags: pr-${{ github.event.pull_request.number }}
 
   deploy-staging-serverless:
