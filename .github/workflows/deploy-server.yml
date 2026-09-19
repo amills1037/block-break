@@ -150,7 +150,7 @@ jobs:
         run: |
           docker buildx imagetools create \
           ghcr.io/${{ github.repository_owner }}/block-break-server:pr-${{ github.event.pull_request.number }} \
-          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
+          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:staging
 
       - name: Remove image
         uses: dataaxiom/ghcr-cleanup-action@v1 ## no offical action to remove tags, docker does not have an option to
@@ -213,10 +213,11 @@ jobs:
         run: |
           docker buildx imagetools create \
           ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
-          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:production \
+          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:production
+
           docker buildx imagetools create \
           ghcr.io/${{ github.repository_owner }}/block-break-server:staging \
-          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:latest \
+          --tag ghcr.io/${{ github.repository_owner }}/block-break-server:latest
 
   deploy-production-serverless:
     name: Deploy production serverless
