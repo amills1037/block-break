@@ -29,9 +29,10 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
-        session.sendMessage(new TextMessage("Connection established successfully!"));
 
-        System.out.println("Connection established");
+//         session.sendMessage(new TextMessage("Connection established successfully!"));
+//
+//         System.out.println("Connection established");
     }
 
     @Override
