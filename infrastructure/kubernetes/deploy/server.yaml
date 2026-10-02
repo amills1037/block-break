@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: block-break-service
+  namespace: block-break
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+  selector:
+    app: block-break-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: block-break-server
+  namespace: block-break
+  annotations:
+      tailscale.com/expose: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: block-break-server
+  template:
+    metadata:
+      labels:
+        app: block-break-server
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - server
+      containers:
+        - name: block-break-server
+          image: ghcr.io/amills1037/block-break-server:latest
+          imagePullPolicy: Always
