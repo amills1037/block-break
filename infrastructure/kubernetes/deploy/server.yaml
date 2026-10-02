@@ -40,3 +40,20 @@ spec:
         - name: block-break-server
           image: ghcr.io/amills1037/block-break-server:latest
           imagePullPolicy: Always
+          env:
+            # Defines an environment variable for the password
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: maria-db-secret
+                  key: password
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-db-secret
+                  key: password
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-db-secret
+                  key: password
