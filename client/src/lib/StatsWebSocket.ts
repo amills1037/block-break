@@ -52,7 +52,7 @@ class StatsWebSockets {
                     data: { count: number };
                 };
 
-                console.log(this.socketUUID + ' global.data.count', global.data.count);
+                // console.log(this.socketUUID + ' global.data.count', global.data.count);
                 this.setCountCallback(global.data.count);
             }
         });
@@ -91,10 +91,10 @@ class StatsWebSockets {
     }
 
     public breakBlock(): void {
-        console.log(this.socketUUID + ' breakBlock');
+       // console.log(this.socketUUID + ' breakBlock');
 
         if (this.webSocket?.readyState === WebSocket.OPEN) {
-            console.log(this.socketUUID + " breakBlock: ", "action=breakblock");
+            //console.log(this.socketUUID + " breakBlock: ", "action=breakblock");
             this.webSocket.send('{"action": "breakblock"}');
         }
     }

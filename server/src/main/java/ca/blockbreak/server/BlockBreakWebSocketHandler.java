@@ -42,24 +42,18 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
 
         String path = session.getUri().getPath();
 
+        System.out.println("handleTextMessage: " + path + ", " + json.getString("action"));
+
         if ("connect".equals(json.getString("action"))) {
             System.out.println("Action connect");
-            //noop
-        } else if ("blockBreak".equals(json.getString("action"))) {
-            System.out.println("Action blockBreak");
-            int count = -1;
-            if ("/mariadb".equals(path)) {
-                count = databaseService.incrementGlobalCount(Database.MARIADB);
-            } else if ("/mongodb".equals(path)) {
-                count = databaseService.incrementGlobalCount(Database.MONGODB);
-            } else if ("/postgresql".equals(path)) {
-                count = databaseService.incrementGlobalCount(Database.POSTGRESQL);
-            }
 
-            String action =
-                "{\"action\": \"global\", \"data\": { \"count\": " +
-                count +
-                " }}";
+            String action = getGlobalCount(path);
+
+            session.sendMessage(new TextMessage(action));
+        } else if ("breakblock".equals(json.getString("action"))) {
+            System.out.println("Action breakblock");
+
+            String action = incrementGlobalCount(path);
 
             for (WebSocketSession webSocketSession : sessions) {
                 String wssPath = webSocketSession.getUri().getPath();
@@ -77,5 +71,43 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
         sessions.remove(session);
 
         System.out.println("Connection closed");
+    }
+
+    private String getGlobalCount(String path) {
+        int count = -1;
+
+        if ("/mariadb".equals(path)) {
+            count = databaseService.getGlobalCount(Database.MARIADB);
+        } else if ("/mongodb".equals(path)) {
+            count = databaseService.getGlobalCount(Database.MONGODB);
+        } else if ("/postgresql".equals(path)) {
+            count = databaseService.getGlobalCount(Database.POSTGRESQL);
+        }
+
+        String action =
+            "{\"action\": \"global\", \"data\": { \"count\": " +
+            count +
+            " }}";
+
+        return action;
+    }
+
+    private String incrementGlobalCount(String path) {
+        int count = -1;
+
+        if ("/mariadb".equals(path)) {
+            count = databaseService.incrementGlobalCount(Database.MARIADB);
+        } else if ("/mongodb".equals(path)) {
+            count = databaseService.incrementGlobalCount(Database.MONGODB);
+        } else if ("/postgresql".equals(path)) {
+            count = databaseService.incrementGlobalCount(Database.POSTGRESQL);
+        }
+
+        String action =
+            "{\"action\": \"global\", \"data\": { \"count\": " +
+            count +
+            " }}";
+
+        return action;
     }
 }
