@@ -8,13 +8,13 @@ interface ButtonProps {
 function ServerButton({ db = "random" }: ButtonProps) {
     switch (db) {
         case "random":
-            return <Button href="/server">Server</Button>;
+            return <Button href="/client?db=0">Server</Button>;
         case "mysql":
-            return <A href="/server?db=mysql">MySQL</A>;
+            return <A href="/client?db=1">MySQL</A>;
         case "postgresql":
-            return <A href="/server?db=postgresql">PostgreSQL</A>;
+            return <A href="/client?db=2">PostgreSQL</A>;
         case "mongodb":
-            return <A href="/server?db=mongodb">MongoDB</A>;
+            return <A href="/client?db=3">MongoDB</A>;
     }
 }
 
