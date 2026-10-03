@@ -13,9 +13,9 @@ function getWebSocketUrl(): string {
   const db = urlParams.get('db');
 
   const urls = [
-      'wss://socket.serverblockbreak:443/mariadb',
-      'wss://socket.serverblockbreak:443/mongodb',
-      'wss://socket.serverblockbreak:443/postgresql'
+      'wss://socket.serverblockbreak.ca:443/mariadb',
+      'wss://socket.serverblockbreak.ca:443/mongodb',
+      'wss://socket.serverblockbreak.ca:443/postgresql'
   ];
 
   switch (db) {
