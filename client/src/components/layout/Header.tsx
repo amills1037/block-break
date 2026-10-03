@@ -1,8 +1,9 @@
 interface GlobalCount {
     globalCount: number;
+    webSocketName: string;
 }
 
-function Header({ globalCount }: GlobalCount) {
+function Header({ globalCount, webSocketName }: GlobalCount) {
     return (
         <header className="px-3 py-4 flex gap-2 bg-teal-700 ring ring-gray-900">
             {/* "arrow" from https://fonts.google.com/icons arrow back */}
@@ -18,7 +19,7 @@ function Header({ globalCount }: GlobalCount) {
                 </svg>
             </a>
 
-            <h1 className="text-white">Global Count {globalCount}</h1>
+            <h1 className="text-white">{ webSocketName } | Global Count {globalCount}</h1>
         </header>
     );
 }
