@@ -9,6 +9,8 @@ function App() {
     const statsRef = useRef<{ breakBlock: () => void }>(null!);
     const [count, setCount] = useState(0);
 
+    const [name, setName] = useState('');
+
     useEffect(() => {
         const interval = setInterval(() => {
             statsRef.current?.breakBlock()
@@ -21,9 +23,9 @@ function App() {
 
     return (
         <>
-            <Stats ref={statsRef} setCount={setCount} />
+          <Stats ref={statsRef} setCount={setCount} setName={setName}/>
 
-            <Header globalCount={count} />
+            <Header webSocketName={name} globalCount={count} />
             <Main />
             <Footer />
         </>
