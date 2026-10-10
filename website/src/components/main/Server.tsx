@@ -17,8 +17,8 @@ function Server() {
             </P>
             <ServerButton />
             <ServerButton db="mysql" />
-            <ServerButton db="postgresql" />
             <ServerButton db="mongodb" />
+            <ServerButton db="postgresql" />
         </HeroBox>
     );
 }
