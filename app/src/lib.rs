@@ -25,13 +25,15 @@ use state::AppState;
 use terrain::TerrainPlugin;
 
 #[wasm_bindgen]
-pub fn main() {
+pub fn main(canvas_id: &str) {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 // Matches the id="my-canvas" in your HTML
-                canvas: Some("#webasm-canvas".to_string()),
+                canvas: Some(format!("#{}", canvas_id)),
                 fit_canvas_to_parent: true,
+                // ?? Prevents standard canvas creation behavior from bypassing CSS rules
+                prevent_default_event_handling: false,
                 ..default()
             }),
             ..default()
@@ -79,7 +81,7 @@ fn setup(
     // light
     commands.spawn((
         PointLight {
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             ..default()
         },
         Transform::from_xyz(40.0, 80.0, 40.0),

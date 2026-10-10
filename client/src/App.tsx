@@ -23,7 +23,7 @@ function App() {
 
     return (
         <>
-          <Stats ref={statsRef} setCount={setCount} setName={setName}/>
+            <Stats ref={statsRef} setCount={setCount} setName={setName}/>
 
             <Header webSocketName={name} globalCount={count} />
             <Main />

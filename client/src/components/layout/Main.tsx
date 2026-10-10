@@ -1,9 +1,11 @@
-import WebASMApp from "@/components/WebASMApp";
+import BlockBreakApp from "@/components/BlockBreakApp";
 
 function Main() {
     return (
-        <main className="flex justify-center px-6 py-8 grow bg-white dark:bg-gray-800 shadow-md ring ring-gray-900/5">
-            <WebASMApp />
+        <main className="flex-1 relative bg-white dark:bg-gray-800 shadow-md ring ring-gray-900/5">
+            <div className="px-3 py-4 absolute inset-0 size-full">
+                <BlockBreakApp />
+            </div>
         </main>
     );
 }
