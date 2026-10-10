@@ -10,7 +10,7 @@ class StatsWebSockets {
 
     private setCountCallback: (count: number) => void;
 
-    constructor(url: string, setCountCallback: (count: number) => void) {
+    public constructor(url: string, setCountCallback: (count: number) => void) {
         this.url = url;
         this.setCountCallback = setCountCallback;
 
@@ -44,7 +44,7 @@ class StatsWebSockets {
         });
 
         this.webSocket.addEventListener("message", (event: MessageEvent) => {
-            console.log(this.socketUUID + ' message', event);
+            // console.log(this.socketUUID + ' message', event);
             const data: { action: string } = JSON.parse(event.data);
             if (data.action === "global") {
                 const global = data as {
@@ -53,7 +53,7 @@ class StatsWebSockets {
                 };
 
                 // console.log(this.socketUUID + ' global.data.count', global.data.count);
-                this.setCountCallback(global.data.count);
+              this.setCountCallback(global.data.count);
             }
         });
 
