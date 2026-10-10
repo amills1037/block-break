@@ -5,17 +5,17 @@ import WebASMApp from '@/lib/WebASMApp';
 function BlockBreakApp() {
     const webASMApp = useRef<WebASMApp>(null);
 
-        const canvasRef = useRef(null);
+        const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
         useEffect(() => {
             console.log("BlockBreakApp new");
-            webASMApp.current = new WebASMApp(canvasRef.current);
+            webASMApp.current = new WebASMApp(canvasRef.current!);
 
             webASMApp.current.initialized(() => {
                 console.log("BlockBreakApp initialized");
 
                 console.log("BlockBreakApp start run");
-                webASMApp.current.run();
+                webASMApp.current!.run();
                 console.log("BlockBreakApp end run");
             });
 
@@ -23,7 +23,7 @@ function BlockBreakApp() {
 
             return () => {
               console.log("BlockBreakApp destroy");
-              webASMApp.current.destroy();
+              webASMApp.current!.destroy();
             };
         }, []); // Empty array attaches the listener once on mount
 
