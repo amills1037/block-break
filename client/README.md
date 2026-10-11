@@ -1,5 +1,7 @@
 # Block Break client application
 
+## URL
+
 http://www.blockbreak.ca/client/
 
 ## Technology
@@ -8,3 +10,4 @@ http://www.blockbreak.ca/client/
 - TypeScript
 - Vite
 - WebAssembly
+- WebSocket
