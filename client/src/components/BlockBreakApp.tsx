@@ -1,3 +1,7 @@
+/**
+ * Initializes the WebAssembly application and shows the canvas
+ */
+
 import { useEffect, useRef } from "react";
 
 import WebASMApp from '@/lib/WebASMApp';
@@ -5,6 +9,7 @@ import WebASMApp from '@/lib/WebASMApp';
 function BlockBreakApp() {
     const webASMApp = useRef<WebASMApp>(null);
 
+        //Use reference to prevent redraw
         const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
         useEffect(() => {
@@ -27,7 +32,7 @@ function BlockBreakApp() {
             };
         }, []); // Empty array attaches the listener once on mount
 
-    return <canvas ref={canvasRef} className=" bg-amber-100"></canvas>;
+    return <canvas ref={canvasRef}></canvas>;
 }
 
 export default BlockBreakApp;

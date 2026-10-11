@@ -7,11 +7,12 @@ import Stats from "@/components/backend/Stats";
 
 function App() {
     const statsRef = useRef<{ breakBlock: () => void }>(null!);
-    const [count, setCount] = useState(0);
 
+    const [count, setCount] = useState(0);
     const [name, setName] = useState('');
 
     useEffect(() => {
+        //interval to mock pressing a button inside the web assembply application
         const interval = setInterval(() => {
             statsRef.current?.breakBlock()
         }, 1000);

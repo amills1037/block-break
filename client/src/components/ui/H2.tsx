@@ -1,3 +1,8 @@
+/**
+ * Shows a h2 header with sytling
+ *
+ */
+
 import React from "react";
 
 interface H2Props {

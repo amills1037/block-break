@@ -1,3 +1,8 @@
+/**
+ * Shows WebSocket server name and global count
+ *
+ */
+
 interface GlobalCount {
     globalCount: number;
     webSocketName: string;

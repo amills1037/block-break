@@ -1,3 +1,8 @@
+/**
+ * Shows the WebAssembly application
+ *
+ */
+
 import BlockBreakApp from "@/components/BlockBreakApp";
 
 function Main() {

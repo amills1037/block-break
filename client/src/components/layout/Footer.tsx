@@ -1,3 +1,8 @@
+/**
+ * Shows copyright
+ *
+ */
+
 import H2 from "@ui/H2";
 
 function Footer() {

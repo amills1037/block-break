@@ -1,6 +1,17 @@
+/**
+ * Backend component to connect to the WebSocketServer and send and receive messages.
+ *
+ */
+
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 
 import StatsWebSocket from "@/lib/StatsWebSocket";
+import {getWebSocketUrl} from "@/lib/websocketurl";
+
+/**
+ * Type to store data to display
+ *
+ */
 
 interface StatsInterface {
     ref?: Ref<{ breakBlock: () => void }>;
@@ -8,39 +19,17 @@ interface StatsInterface {
     setName: (s: string) => void;
 }
 
-function getWebSocketUrl(): [string, string] {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const db = urlParams.get('db');
-
-  const urls: [string, string][] = [
-      ['wss://socket.serverblockbreak.ca:443/mariadb', 'Server/MariaDB'],
-      ['wss://socket.serverblockbreak.ca:443/mongodb', 'Server/MongoDB'],
-      ['wss://socket.serverblockbreak.ca:443/postgresql', 'Server/PostgreSQL']
-  ];
-
-  const r = Math.floor(Math.random() * urls.length);
-
-  switch (db) {
-      case '0':
-          return urls[r];
-      case '1':
-          return urls[0];
-      case '2':
-          return urls[1];
-      case '3':
-          return urls[2];
-      default:
-          return ['wss://serverless.blockbreak.ca:443', "Serverless"];
-      }
-}
-
 function Stats({ ref, setCount, setName }: StatsInterface) {
+    //Use refence to prevent redraw when changed
     const sws = useRef<StatsWebSocket>(null!);
     useEffect(() => {
         console.log("Stats useEffect");
 
-        const [url, name] = getWebSocketUrl();
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const db = urlParams.get('db');
+
+        const [url, name] = getWebSocketUrl(db);
         setName(name);
         sws.current = new StatsWebSocket(
             url, (c: number) => {
@@ -55,6 +44,7 @@ function Stats({ ref, setCount, setName }: StatsInterface) {
         };
     }, [setCount, setName]);
 
+    //Code to allow a breakBlock function to be called outside the component.
     useImperativeHandle(ref, () => {
         return {
             breakBlock: () => {
