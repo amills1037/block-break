@@ -1,5 +1,5 @@
 /**
- * Shows the WebAssembly application
+ * Shows the WebAssembly application.
  *
  */
 

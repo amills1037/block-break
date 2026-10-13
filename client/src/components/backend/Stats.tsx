@@ -9,7 +9,7 @@ import StatsWebSocket from "@/lib/StatsWebSocket";
 import {getWebSocketUrl} from "@/lib/websocketurl";
 
 /**
- * Type to store data to display
+ * Type to store data to display.
  *
  */
 
