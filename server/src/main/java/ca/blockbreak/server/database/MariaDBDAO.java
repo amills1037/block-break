@@ -6,6 +6,10 @@ import java.sql.SQLException;
 
 import org.mariadb.jdbc.MariaDbPoolDataSource;
 
+/**
+ * MariaDBDAO implementation
+ * Used access the MariaDB database
+ */
 public final class MariaDBDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
@@ -15,7 +19,13 @@ public final class MariaDBDAO implements StatsDAO {
 
     private Connection sqlConnection;
 
+    /**
+     * Constructor
+     *
+     * @param sm secrets manager to get the connection parameters
+     */
     public MariaDBDAO(SecretsManager sm) {
+        //Double lock to prevent creating the dataSource twice
         if (dataSource == null) {
             synchronized(lock) {
                 if (dataSource == null) {
@@ -28,12 +38,6 @@ public final class MariaDBDAO implements StatsDAO {
                         //Should consider using Apache Commons DBCP
                         String url = "jdbc:mariadb://" + host + ":3306/" + database + "?user=" + username + "&password=" + password + "&maxPoolSize=5";
                         dataSource = new MariaDbPoolDataSource(url);
-
-                        //Setting the username and password after setting the url will cause the pool to log errors, they are not actual errors
-                        // String url = "jdbc:mariadb://" + host + ":3306/" + database + "?maxPoolSize=5";
-                        // dataSource = new MariaDbPoolDataSource(url);
-                        // dataSource.setUser(username);
-                        // dataSource.setPassword(password);
 
                     } catch (SQLException sqle) {
                         throw new DataAccessException(sqle.getMessage(), sqle);

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DataAccessExceptionTests {
+class DataAccessExceptionTest {
 
 	/**
 	* Creates DataAccessException with message, it should not be null

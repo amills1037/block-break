@@ -6,6 +6,10 @@ import java.sql.SQLException;
 
 import org.postgresql.ds.PGConnectionPoolDataSource;
 
+/**
+ * PostgreSQLDAO implementation
+ * Used access the MongoDB database
+ */
 public final class PostgreSQLDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
@@ -15,6 +19,11 @@ public final class PostgreSQLDAO implements StatsDAO {
 
     private Connection sqlConnection;
 
+    /**
+     * Constructor
+     *
+     * @param sm secrets manager to get the connection parameters
+     */
     public PostgreSQLDAO(SecretsManager sm) {
         if (dataSource == null) {
             synchronized(lock) {

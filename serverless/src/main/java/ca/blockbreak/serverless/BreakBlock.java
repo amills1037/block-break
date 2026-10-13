@@ -4,8 +4,8 @@ import ca.blockbreak.serverless.database.SecretsManager;
 import ca.blockbreak.serverless.database.StatsDAO;
 
 /**
- * BreakBlock message implementation
- * Processes break block messages
+ * BreakBlock message implementation.
+ * Processes break block messages.
  */
 public class BreakBlock {
 
@@ -23,7 +23,8 @@ public class BreakBlock {
     }
 
     /**
-     * Increments the global counter
+     * Increments the global counter.
+     *
      * @param m message to process
      */
     public void processMessage(Message m) {
