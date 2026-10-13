@@ -1,5 +1,5 @@
 /**
- * Shows a h2 header with sytling
+ * Shows a h2 header with sytling.
  *
  */
 

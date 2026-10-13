@@ -1,5 +1,5 @@
 /**
- * Shows WebSocket server name and global count
+ * Shows WebSocket server name and global count.
  *
  */
 

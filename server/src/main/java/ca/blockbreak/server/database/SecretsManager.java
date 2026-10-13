@@ -10,6 +10,7 @@ public final class SecretsManager implements AutoCloseable {
 
     /**
      * Return the software stack:  "Development", "Sandbox" or "Production".
+     * Uses environmental variable STACK.
      *
      * @return softwre stack
      */

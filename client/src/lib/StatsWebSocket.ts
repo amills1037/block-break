@@ -1,5 +1,5 @@
 /**
- * Stats WebSocket implmentation
+ * Stats WebSocket implmentation.
  *
  */
 

@@ -13,28 +13,44 @@ import org.json.JSONObject;
 import ca.blockbreak.server.service.DatabaseService;
 import ca.blockbreak.server.service.DatabaseService.Database;
 
+/**
+ * BlockBreakWebSocketHandler implmentation.
+ * Implements the WebSocket handler used by BlockBreakWebSocketConfig.
+ */
 @Component
 public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
 
+    /**
+     * Stores a list WebSocketSesssions
+     */
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     private final DatabaseService databaseService;
 
+    /**
+     * Constructor
+     *
+     * @param databaseService database service used to access the databases
+     */
     public BlockBreakWebSocketHandler(DatabaseService databaseService) {
         super();
 
         this.databaseService = databaseService;
     }
 
+    /**
+     * After connection is established, add the session to the sessions list.
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
-
-//         session.sendMessage(new TextMessage("Connection established successfully!"));
-//
-//         System.out.println("Connection established");
     }
 
+    /**
+     * Handles the text message sent from the WebSocket client.  The message should be a JSON object.
+     * Should have a "path".  If the "path" is "connect", will send the current global count.
+     * If "path" is "breakblock", increment the global count and send the new value to all the sesssions in the list.
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         String payload = message.getPayload();
@@ -66,6 +82,9 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * After the connection is closed remove the session from the list.
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
@@ -73,6 +92,12 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
         System.out.println("Connection closed");
     }
 
+    /**
+     * Get the global count for the database sepcified by the url path.
+     *
+     * @param path path portion of the url
+     * @return returns a json string.
+     */
     private String getGlobalCount(String path) {
         int count = -1;
 
@@ -92,6 +117,12 @@ public class BlockBreakWebSocketHandler extends TextWebSocketHandler {
         return action;
     }
 
+    /**
+     * Increment the global count for the databases sepcified by the url path and return the new value.
+     *
+     * @param path path portion of the url
+     * @return returns a json string.
+     */
     private String incrementGlobalCount(String path) {
         int count = -1;
 

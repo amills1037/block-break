@@ -10,7 +10,7 @@ class WebASMApp {
     private canvasId: string;
 
     /**
-     * Constructor from StatsWebSocket
+     * Constructor for StatsWebSocket.
      *
      * @param canvas HTML canvas element to show the web assemply in
      *

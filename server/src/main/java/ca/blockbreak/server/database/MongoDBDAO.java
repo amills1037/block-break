@@ -16,6 +16,10 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 
+/**
+ * MongoDBDAO implementation
+ * Used access the MongoDB database
+ */
 public final class MongoDBDAO implements StatsDAO {
 
     private static final String COLLECTION_NAME = "statistics";
@@ -30,6 +34,11 @@ public final class MongoDBDAO implements StatsDAO {
 
     public MongoDatabase mongoDatabase;
 
+    /**
+     * Constructor
+     *
+     * @param sm secrets manager to get the connection parameters
+     */
     public MongoDBDAO(SecretsManager sm) {
         if (mongoClient == null) {
             synchronized(lock) {

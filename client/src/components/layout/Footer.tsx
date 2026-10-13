@@ -1,5 +1,5 @@
 /**
- * Shows copyright
+ * Shows copyright.
  *
  */
 

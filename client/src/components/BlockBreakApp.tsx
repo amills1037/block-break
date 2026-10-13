@@ -1,5 +1,5 @@
 /**
- * Initializes the WebAssembly application and shows the canvas
+ * Initializes the WebAssembly application and shows the canvas.
  */
 
 import { useEffect, useRef } from "react";

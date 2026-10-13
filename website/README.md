@@ -2,7 +2,7 @@
 
 ## URL
 
-http://www.blockbreak.ca/
+https://www.blockbreak.ca/
 
 ## Technology
 

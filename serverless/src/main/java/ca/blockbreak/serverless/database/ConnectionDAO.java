@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 /**
+ * Connection data access object implementation
+ * Used to access WebSocket connection to send messages
  * Implements a wrapper around the connection table.  Underlying implmentation should be indepenedent.
  *
  */
@@ -27,6 +29,12 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
 
     private String tableName;
 
+    /**
+     * Constructor
+     *
+     * @param sm secrets manager used to create the table name
+     *
+     */
     public ConnectionDAO(SecretsManager sm) {
         // AWS Region should not be hardcoded
         // Region region = Region.CA_CENTRAL_1;
@@ -38,6 +46,12 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
         tableName = getTableName(sm);
     }
 
+    /**
+     * Add the WebSocket connection id to the connection table
+     *
+     * @param connectionId conenction id to add
+     *
+     */
     public void addConnection(String connectionId) {
         Map<String, AttributeValue> item = new HashMap<>();
         item.put(
@@ -53,6 +67,13 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
         dbClient.putItem(putRequest);
     }
 
+    /**
+     * Checks if the connection id exists in the connections table
+     *
+     * @param connectionId connection id to check
+     * @return true if the connection id exists in the connection table
+     *
+     */
     public boolean connectionExists(String connectionId) {
         Map<String, AttributeValue> primaryKey = new HashMap<>();
         primaryKey.put(
@@ -74,6 +95,12 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
         return response.hasItem();
     }
 
+    /**
+     * Remove the connection id from the connection table
+     *
+     * @param connectionId connection id to remove from the connection table
+     *
+     */
     public void deleteConnection(String connectionId) {
         Map<String, AttributeValue> item = new HashMap<>();
         item.put(
@@ -89,6 +116,12 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
         dbClient.deleteItem(deleteRequest);
     }
 
+    /**
+     * Get the connection ids in the connection table
+     *
+     * @return the list of connectin ids from the connection table
+     *
+     */
     public List<String> getConnections() {
         var connections = new ArrayList<String>();
 
@@ -105,13 +138,20 @@ public final class ConnectionDAO implements java.lang.AutoCloseable {
 
     /**
      * Close any open resources
+     *
      */
-
     public void close() {
         // close the dynamo db client connection.
         dbClient.close();
     }
 
+    /**
+     * Returns the table name by combining the lower case stack name with the table root name
+     *
+     * @param sm secrets manager used to create the table name
+     * @return the table name
+     *
+     */
     private String getTableName(SecretsManager sm) {
         //Table name depends on the stack and region
         return sm.getStack().toLowerCase() + "-" + TABLE_ROOT_NAME;

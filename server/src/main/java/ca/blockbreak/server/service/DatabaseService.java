@@ -7,8 +7,15 @@ import ca.blockbreak.server.database.MongoDBDAO;
 import ca.blockbreak.server.database.PostgreSQLDAO;
 import ca.blockbreak.server.database.SecretsManager;
 
+/**
+ * DatabaseService implementation
+ * A service to acess all the different databases.  Using a service instead of a factory because the code is simpler.
+ */
 @Service
 public final class DatabaseService implements AutoCloseable {
+    /**
+     * Enumeration of the databases
+     */
     public enum Database {
         MARIADB,
         POSTGRESQL,
@@ -21,6 +28,10 @@ public final class DatabaseService implements AutoCloseable {
     private MongoDBDAO mongoDBDAO;
     private PostgreSQLDAO postgreSQLDAO;
 
+    /**
+     * Constructor
+     * Creates a service object.  Only one service object should be created per application.
+     */
     public DatabaseService() {
         secretsManager = new SecretsManager();
 
@@ -30,6 +41,11 @@ public final class DatabaseService implements AutoCloseable {
 
     }
 
+    /**
+     * Increment the global counter from a specific database.
+     *
+     * @param db database to use to increment
+     */
     public int incrementGlobalCount(Database db) {
         int count = -1;
 
@@ -48,6 +64,11 @@ public final class DatabaseService implements AutoCloseable {
         return count;
     }
 
+    /**
+     * Get the global counter from a specific database.
+     *
+     * @param db database to use to increment
+     */
     public int getGlobalCount(Database db) {
         int count = -1;
         switch (db) {
@@ -65,6 +86,9 @@ public final class DatabaseService implements AutoCloseable {
         return count;
     }
 
+    /**
+     * Close all the databases.
+     */
     @Override
     public void close() {
         try {

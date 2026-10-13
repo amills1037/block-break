@@ -15,7 +15,9 @@ import software.amazon.awssdk.services.apigatewaymanagementapi.ApiGatewayManagem
 import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConnectionRequest;
 
 /**
- * WebSocket
+ * WebSocket app implementation
+ * Implements Lambda function handler
+ *
  */
 public class App
     implements
@@ -25,6 +27,11 @@ public class App
         >
 {
 
+    /* (non-Javadoc)
+     *
+     * @see com.amazonaws.services.lambda.runtime.RequestHandler#handleRequest(java.lang.Object, com.amazonaws.services.lambda.runtime.Context)
+     *
+     */
     @Override
     public APIGatewayV2WebSocketResponse handleRequest(
         APIGatewayV2WebSocketEvent event,

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PostgreSQLDAOTests {
+class MariaDBDAOTest {
 
 	/**
      * Test incrementing the global counter.  Should return a value greater than 0
@@ -14,8 +14,8 @@ class PostgreSQLDAOTests {
     @Test
     public void shouldIncrementGlobalCount() {
         try (var secrets = new SecretsManager()) {
-            try (var postgreSQLDAO = new PostgreSQLDAO(secrets)) {
-                int globalCount = postgreSQLDAO.incrementGlobalCount();
+            try (var mariaDBDAO = new MariaDBDAO(secrets)) {
+                int globalCount = mariaDBDAO.incrementGlobalCount();
                 System.out.println("increment globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }
@@ -28,8 +28,8 @@ class PostgreSQLDAOTests {
     @Test
     public void shouldGetGlobalCount() {
         try (var secrets = new SecretsManager()) {
-            try (var postgreSQLDAO = new PostgreSQLDAO(secrets)) {
-                int globalCount = postgreSQLDAO.getGlobalCount();
+            try (var mariaDBDAO = new MariaDBDAO(secrets)) {
+                int globalCount = mariaDBDAO.getGlobalCount();
                 System.out.println("get globalCount: " + globalCount);
                 assertTrue(globalCount > 0);
             }
