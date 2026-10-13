@@ -1,17 +1,13 @@
-# Serverless
+# Block Break AWS serverless endpoint
 
-# Install
+## URL
 
-See /infrastructure/terraform
+wss://serverless.blockbreak.ca/
 
-# CI/CD
+## Technology
 
-Single branch at the moment
-
-GitHub Actions
-
-Push to main branch should deploy to AWS
-
-## Created Java project with command:
-
-    mvn archetype:generate -DgroupId=ca.blockbreak.serverless -DartifactId=serverless -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.5 -DinteractiveMode=false
+- React
+- TypeScript
+- Vite
+- WebAssembly
+- WebSocket

@@ -3,6 +3,8 @@ package ca.blockbreak.serverless.database;
 import java.util.Objects;
 
 /**
+ * Secret manager implementation
+ * Used to retrieve environmental variables and secrets
  * Manager for accessing secret and enviornment variables.  Values should not change after first use.
  *
  */

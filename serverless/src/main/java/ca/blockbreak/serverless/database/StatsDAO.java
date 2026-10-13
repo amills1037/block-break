@@ -11,7 +11,9 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 
 /**
+ * Stats data access object implementation
  * Implements a wrapper around the stats table.  Underlying implmentation should be indepenedent of the database used.
+ * Used to access global count
  *
  */
 public final class StatsDAO implements java.lang.AutoCloseable {
@@ -32,6 +34,12 @@ public final class StatsDAO implements java.lang.AutoCloseable {
 
     private String tableName;
 
+    /**
+     * Constructor
+     *
+     * @param sm secrets manager used to create the table name
+     *
+     */
     public StatsDAO(SecretsManager sm) {
         dbClient =
             DynamoDbClient.builder()
@@ -40,6 +48,10 @@ public final class StatsDAO implements java.lang.AutoCloseable {
         tableName = getTableName(sm);
     }
 
+    /**
+     * Increment global count and return incremented value
+     *
+     */
     public int incrementGlobalCount() {
         Map<String, AttributeValue> primaryKey = new HashMap<>();
         primaryKey.put(
@@ -69,6 +81,10 @@ public final class StatsDAO implements java.lang.AutoCloseable {
         return Integer.parseInt(stat);
     }
 
+    /**
+     * Get global count
+     *
+     */
     public int getGlobalCount() {
         Map<String, AttributeValue> primaryKey = new HashMap<>();
         primaryKey.put(
@@ -92,12 +108,20 @@ public final class StatsDAO implements java.lang.AutoCloseable {
 
     /**
      * Close any open resources
+     *
      */
     public void close() {
         // close the dynamo db client connection.
         dbClient.close();
     }
 
+    /**
+     * Returns the table name by combining the lower case stack name with the table root name
+     *
+     * @param sm secrets manager used to create the table name
+     * @return the table name
+     *
+     */
     private String getTableName(SecretsManager sm) {
         //Table name depends on the stack and region
         return sm.getStack().toLowerCase() + "-" + TABLE_ROOT_NAME;

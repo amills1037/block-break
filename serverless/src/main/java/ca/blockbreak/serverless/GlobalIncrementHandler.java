@@ -13,10 +13,19 @@ import software.amazon.awssdk.services.apigatewaymanagementapi.ApiGatewayManagem
 import software.amazon.awssdk.services.apigatewaymanagementapi.model.GoneException;
 import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConnectionRequest;
 
+/**
+ * GlobalIncrementHandler impementation
+ * Send global increment message to connected ids.
+ *
+ */
 public class GlobalIncrementHandler
     implements RequestHandler<DynamodbEvent, String>
 {
 
+    /* (non-Javadoc)
+     *
+     * @see com.amazonaws.services.lambda.runtime.RequestHandler#handleRequest(java.lang.Object, com.amazonaws.services.lambda.runtime.Context)
+     */
     @Override
     public String handleRequest(DynamodbEvent ddbEvent, Context context) {
         try (SecretsManager secretsManager = new SecretsManager()) {
