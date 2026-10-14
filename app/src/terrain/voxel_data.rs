@@ -33,6 +33,8 @@ macro_rules! index_offset_y {
 
 pub struct VoxelData {
     pub coords: IVec3,
+
+    #[allow(dead_code)]
     pub overlap: IVec3,
 
     blocks: [u8; DATA_XYZ_LENGTH as usize],
@@ -43,8 +45,8 @@ impl VoxelData {
     pub fn new(coords: IVec3) -> Self {
         let overlap = IVec3::ZERO;
 
-        let blocks = [0 as u8; DATA_XYZ_LENGTH as usize];
-        let block_mask_y = [0 as u32; DATA_XZ_LENGTH as usize];
+        let blocks = [0_u8; DATA_XYZ_LENGTH as usize];
+        let block_mask_y = [0_u32; DATA_XZ_LENGTH as usize];
 
         Self {
             coords,
@@ -54,9 +56,10 @@ impl VoxelData {
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_overlap(coords: IVec3, overlap: IVec3) -> Self {
-        let blocks = [0 as u8; DATA_XYZ_LENGTH as usize];
-        let block_mask_y = [0 as u32; DATA_XZ_LENGTH as usize];
+        let blocks = [0_u8; DATA_XYZ_LENGTH as usize];
+        let block_mask_y = [0_u32; DATA_XZ_LENGTH as usize];
 
         Self {
             coords,
@@ -71,8 +74,8 @@ impl Default for VoxelData {
     fn default() -> Self {
         let coords = IVec3::ZERO;
         let overlap = IVec3::ZERO;
-        let blocks = [0 as u8; DATA_XYZ_LENGTH as usize];
-        let block_mask_y = [0 as u32; DATA_XZ_LENGTH as usize];
+        let blocks = [0_u8; DATA_XYZ_LENGTH as usize];
+        let block_mask_y = [0_u32; DATA_XZ_LENGTH as usize];
 
         Self {
             coords,
@@ -84,6 +87,7 @@ impl Default for VoxelData {
 }
 
 impl VoxelData {
+    #[allow(dead_code)]
     pub fn reset(&mut self, coords: IVec3) {
         self.coords = coords;
     }
@@ -107,6 +111,7 @@ impl VoxelData {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get_mask(&self, x: i32, z: i32) -> u32 {
         self.block_mask_y[index_offset_y!(x, z)]
     }

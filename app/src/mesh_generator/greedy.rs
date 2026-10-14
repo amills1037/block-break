@@ -5,6 +5,7 @@ use crate::terrain::voxel_data::{
     CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, EMPTY_VOXEL, VoxelData,
 };
 
+#[allow(dead_code)]
 pub struct GreedyMeshGenerator;
 
 impl MeshGenerator for GreedyMeshGenerator {
@@ -14,12 +15,9 @@ impl MeshGenerator for GreedyMeshGenerator {
         let mut z = 0;
 
         while x < CHUNK_X_LENGTH {
-            z = 0;
             while z < CHUNK_Z_LENGTH {
                 let mask_y = voxel_data.get_mask(x, z);
-                y = 0;
                 while y < CHUNK_Y_LENGTH && mask_y != 0 {
-                    let yl = 1;
                     let (solid, xl, yl, zl) =
                         GreedyMeshGenerator::generate_solid(voxel_data, x, y, z);
 
@@ -38,13 +36,16 @@ impl MeshGenerator for GreedyMeshGenerator {
                     y += yl;
                 }
                 z += 1;
+                y = 0;
             }
             x += 1;
+            z = 0;
         }
     }
 }
 
 impl GreedyMeshGenerator {
+    #[allow(dead_code)]
     fn generate_solid(voxel_data: &VoxelData, x: i32, y: i32, z: i32) -> (bool, i32, i32, i32) {
         let block = voxel_data.get_data(x, y, z);
         let solid = block != EMPTY_VOXEL;
@@ -66,7 +67,7 @@ impl GreedyMeshGenerator {
             y += 1;
         }
 
-        return (solid, xl, yl, zl);
+        (solid, xl, yl, zl)
     }
 }
 

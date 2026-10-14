@@ -5,6 +5,7 @@ pub trait TerrainGenerator {
     fn generate(&self, voxel_data: &mut VoxelData);
 }
 
+#[allow(dead_code)]
 pub struct FlatTerrainGenerator {
     pub height: i32,
     pub solid_voxel: u8,
@@ -12,6 +13,7 @@ pub struct FlatTerrainGenerator {
 }
 
 impl FlatTerrainGenerator {
+    #[allow(dead_code)]
     pub fn new(height: i32) -> Self {
         Self {
             height,
@@ -110,5 +112,17 @@ impl TerrainGenerator for HeightMapTerrainGenerator {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_flat_terrain_generator() {
+        let generator = FlatTerrainGenerator::new(16);
+
+        assert_eq!(generator.height, 16);
     }
 }

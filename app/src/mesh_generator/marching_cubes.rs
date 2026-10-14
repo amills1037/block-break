@@ -6,6 +6,7 @@ use super::MeshGenerator;
 use super::voxel_mesh::VoxelMesh;
 use crate::terrain::voxel_data::{CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, VoxelData};
 
+#[allow(dead_code)]
 pub struct MarchingCubesMeshGenerator;
 
 impl MeshGenerator for MarchingCubesMeshGenerator {
@@ -129,7 +130,8 @@ impl MeshGenerator for MarchingCubesMeshGenerator {
     }
 }
 
+#[allow(dead_code)]
 fn interpolate_verts(v1: Vec4, v2: Vec4) -> Vec3 {
     let t = (ISO_LEVEL - v1.w) / (v2.w - v1.w);
-    return v1.xyz() + t * (v2.xyz() - v1.xyz());
+    v1.xyz() + t * (v2.xyz() - v1.xyz())
 }
