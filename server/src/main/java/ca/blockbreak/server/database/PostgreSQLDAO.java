@@ -4,18 +4,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.postgresql.ds.PGConnectionPoolDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * PostgreSQLDAO implementation
- * Used access the MongoDB database
+ * Used access the PostgreSQL database
  */
 public final class PostgreSQLDAO implements StatsDAO {
     private static final String GLOBAL_PLAYER_ID = "global";
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
     private static final Object lock = new Object();
-    private static volatile PGConnectionPoolDataSource dataSource;
+    private static volatile HikariDataSource dataSource;
 
     private Connection sqlConnection;
 
@@ -33,12 +34,20 @@ public final class PostgreSQLDAO implements StatsDAO {
                     String username = sm.getPostgreSQLUsername();
                     String password = sm.getPostgreSQLPassword();
 
-                    //Should consider using Apache Commons DBCP
-                    String url = "jdbc:postgresql://" + host + ":5432/" + database + "?maxPoolSize=5";
-                    dataSource = new PGConnectionPoolDataSource();
-                    dataSource.setURL(url);
-                    dataSource.setUser(username);
-                    dataSource.setPassword(password);
+                    String url = "jdbc:postgresql://" + host + ":5432/" + database;
+
+                    HikariConfig config = new HikariConfig();
+                    config.setJdbcUrl(url);
+                    config.setUsername(username);
+                    config.setPassword(password);
+
+                    // Set pool properties
+                    config.setMaximumPoolSize(10);
+                    config.setMinimumIdle(5);
+                    config.setConnectionTimeout(20000); // 20 seconds
+
+                    config.setIdleTimeout(60000);       // 60 seconds
+                    dataSource = new HikariDataSource(config);
                 }
             }
         }

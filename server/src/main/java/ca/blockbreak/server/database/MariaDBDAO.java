@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.mariadb.jdbc.MariaDbPoolDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * MariaDBDAO implementation
@@ -15,7 +16,7 @@ public final class MariaDBDAO implements StatsDAO {
     private static final String BLOCKS_BROKEN_STAT = "blocksBroken";
 
     private static final Object lock = new Object();
-    private static volatile MariaDbPoolDataSource dataSource;
+    private static volatile HikariDataSource dataSource;
 
     private Connection sqlConnection;
 
@@ -29,20 +30,25 @@ public final class MariaDBDAO implements StatsDAO {
         if (dataSource == null) {
             synchronized(lock) {
                 if (dataSource == null) {
-                    try {
-                        String host = sm.getMariaDBHost();
-                        String database = sm.getMariaDBDatabase();
-                        String username = sm.getMariaDBUsername();
-                        String password = sm.getMariaDBPassword();
+                    String host = sm.getMariaDBHost();
+                    String database = sm.getMariaDBDatabase();
+                    String username = sm.getMariaDBUsername();
+                    String password = sm.getMariaDBPassword();
 
-                        //Should consider using Apache Commons DBCP
-                        String url = "jdbc:mariadb://" + host + ":3306/" + database + "?user=" + username + "&password=" + password + "&maxPoolSize=5";
-                        dataSource = new MariaDbPoolDataSource(url);
+                    String url = "jdbc:mariadb://" + host + ":3306/" + database;
 
-                    } catch (SQLException sqle) {
-                        throw new DataAccessException(sqle.getMessage(), sqle);
-                    }
-                }
+                    HikariConfig config = new HikariConfig();
+                    config.setJdbcUrl(url);
+                    config.setUsername(username);
+                    config.setPassword(password);
+
+                    // Set pool properties
+                    config.setMaximumPoolSize(10);
+                    config.setMinimumIdle(5);
+                    config.setConnectionTimeout(20000); // 20 seconds
+
+                    config.setIdleTimeout(60000);       // 60 seconds
+                    dataSource = new HikariDataSource(config);                }
             }
         }
 
