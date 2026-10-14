@@ -6,6 +6,7 @@ pub struct VoxelMesh {
 }
 
 impl VoxelMesh {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         VoxelMesh {
             vertices: Vec::with_capacity(324000),

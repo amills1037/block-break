@@ -9,6 +9,7 @@ pub enum AppState {
     InGame, // Gameplay starts here
 }
 
+#[allow(dead_code)]
 #[derive(States, Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum GameState {
     #[default]

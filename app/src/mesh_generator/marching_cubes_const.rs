@@ -1,5 +1,6 @@
 pub const ISO_LEVEL: f32 = 0.5;
 
+#[allow(dead_code)]
 pub const EDGE_TABLE: [i32; 256] = [
     0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c, 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03,
     0xe09, 0xf00, 0x190, 0x99, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c, 0x99c, 0x895, 0xb9f,
@@ -23,6 +24,7 @@ pub const EDGE_TABLE: [i32; 256] = [
     0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0,
 ];
 
+#[allow(dead_code)]
 pub const TRI_TABLE: [i32; 4096] = [
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 8, 3, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1,
@@ -178,6 +180,8 @@ pub const TRI_TABLE: [i32; 4096] = [
     -1, -1,
 ];
 
+#[allow(dead_code)]
 pub const CORNER_INDEX_A_FROM_EDGE: [usize; 12] = [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3];
 
+#[allow(dead_code)]
 pub const CORNER_INDEX_B_FROM_EDGE: [usize; 12] = [1, 2, 3, 0, 5, 6, 7, 4, 4, 5, 6, 7];

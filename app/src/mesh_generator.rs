@@ -9,6 +9,7 @@ pub mod mesh_cube;
 pub mod naive;
 pub mod voxel_mesh;
 
+#[allow(dead_code)]
 pub trait MeshGenerator {
     fn generate_mesh(voxel_data: &VoxelData, voxel_mesh: &mut VoxelMesh);
 }

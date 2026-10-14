@@ -33,11 +33,11 @@ impl NoiseGenerator {
         lacunarity: f32,
     ) -> Self {
         Self {
-            seed: seed,
-            scale: scale,
-            octaves: octaves,
-            persistence: persistence,
-            lacunarity: lacunarity,
+            seed,
+            scale,
+            octaves,
+            persistence,
+            lacunarity,
         }
     }
 }
@@ -46,7 +46,7 @@ impl NoiseGenerator {
     pub fn generate_noise_map(
         &self,
         offset: (f32, f32),
-        noise_map: &mut Vec<f32>,
+        noise_map: &mut [f32],
         map_width: usize,
         map_height: usize,
     ) {

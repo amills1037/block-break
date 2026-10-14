@@ -4,6 +4,7 @@ use bevy::prelude::*;
 pub struct VoxelChunkLoader;
 
 impl VoxelChunkLoader {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self
     }
