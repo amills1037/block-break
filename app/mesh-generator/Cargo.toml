@@ -1,0 +1,9 @@
+# mesh-generator/Cargo.toml
+[package]
+name = "mesh-generator"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy = { workspace = true }
+terrain = { workspace = true }

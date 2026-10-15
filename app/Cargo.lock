@@ -260,12 +260,28 @@ checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "app-state",
  "bevy",
- "getrandom 0.4.2",
- "noise-functions",
- "rand",
- "rand_pcg",
+ "game-loading",
+ "terrain",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "app-native"
+version = "0.1.0"
+dependencies = [
+ "app-state",
+ "bevy",
+ "game-loading",
+ "terrain",
+]
+
+[[package]]
+name = "app-state"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
@@ -2836,6 +2852,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "game-loading"
+version = "0.1.0"
+dependencies = [
+ "app-state",
+ "bevy",
+ "terrain",
+]
+
+[[package]]
 name = "gethostname"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3716,6 +3741,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "mesh-generator"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "terrain",
+]
+
+[[package]]
 name = "miniz_oxide"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3830,6 +3863,16 @@ dependencies = [
  "cfg-if",
  "cfg_aliases",
  "libc",
+]
+
+[[package]]
+name = "noise"
+version = "0.1.0"
+dependencies = [
+ "getrandom 0.4.2",
+ "noise-functions",
+ "rand",
+ "rand_pcg",
 ]
 
 [[package]]
@@ -5209,6 +5252,14 @@ name = "tap"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
+
+[[package]]
+name = "terrain"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "noise",
+]
 
 [[package]]
 name = "thiserror"

@@ -1,7 +1,7 @@
 use super::MeshGenerator;
 use super::mesh_cube::VoxelMeshCube;
 use super::voxel_mesh::VoxelMesh;
-use crate::terrain::voxel_data::{CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, VoxelData};
+use terrain::voxel_data::{CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, VoxelData};
 
 #[allow(dead_code)]
 pub struct NaiveMeshGenerator;

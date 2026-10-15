@@ -1,4 +1,4 @@
-use crate::terrain::voxel_data::VoxelData;
+use terrain::voxel_data::VoxelData;
 use voxel_mesh::VoxelMesh;
 
 mod marching_cubes_const;

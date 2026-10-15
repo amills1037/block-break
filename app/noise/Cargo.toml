@@ -1,0 +1,11 @@
+# noise/Cargo.toml
+[package]
+name = "noise"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+noise-functions = { workspace = true }
+rand = { workspace = true }
+rand_pcg = { workspace = true }
+getrandom = { workspace = true }

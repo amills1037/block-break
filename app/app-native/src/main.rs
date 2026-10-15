@@ -1,13 +1,6 @@
-// mod alchemy3_d;
-// mod alchemy_3d_new;
-// mod diagnostic;
-// mod mesh_generator;
-// mod noise; //::noise_generator;
-mod game_loading;
-mod mesh_generator;
-mod noise;
-mod state;
-mod terrain;
+//!
+//! Main bevy application
+//!
 
 use bevy::{
     // diagnostic::{
@@ -18,8 +11,8 @@ use bevy::{
     // render::diagnostic::RenderDiagnosticsPlugin,
 };
 
+use app_state::AppState;
 use game_loading::GameLoadingPlugin;
-use state::AppState;
 use terrain::TerrainPlugin;
 
 fn main() {

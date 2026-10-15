@@ -1,15 +1,10 @@
-use wasm_bindgen::prelude::*;
+//!
+//! Main WebAssembly library
+//!
+//!     main(canvas_id)
+//!
 
-// mod alchemy3_d;
-// mod alchemy_3d_new;
-// mod diagnostic;
-// mod mesh_generator;
-// mod noise; //::noise_generator;
-mod game_loading;
-mod mesh_generator;
-mod noise;
-mod state;
-mod terrain;
+use wasm_bindgen::prelude::*;
 
 use bevy::{
     // diagnostic::{
@@ -20,8 +15,8 @@ use bevy::{
     window::WindowPlugin, // render::diagnostic::RenderDiagnosticsPlugin,
 };
 
+use app_state::AppState;
 use game_loading::GameLoadingPlugin;
-use state::AppState;
 use terrain::TerrainPlugin;
 
 #[wasm_bindgen]

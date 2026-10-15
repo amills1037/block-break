@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::terrain::terrain_plugin::{ChunkCoords, GenerateTerrainChunk};
+use terrain::terrain_plugin::{ChunkCoords, GenerateTerrainChunk};
 
 use super::loading_plugin::LoadingProgress;
 
