@@ -46,8 +46,9 @@ public final class MariaDBDAO implements StatsDAO {
                     config.setMaximumPoolSize(10);
                     config.setMinimumIdle(5);
                     config.setConnectionTimeout(20000); // 20 seconds
-
                     config.setIdleTimeout(60000);       // 60 seconds
+                    config.setMaxLifetime(14400000l);   // 4 hours
+
                     dataSource = new HikariDataSource(config);                }
             }
         }
