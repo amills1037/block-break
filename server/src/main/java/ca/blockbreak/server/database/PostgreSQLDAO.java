@@ -45,8 +45,9 @@ public final class PostgreSQLDAO implements StatsDAO {
                     config.setMaximumPoolSize(10);
                     config.setMinimumIdle(5);
                     config.setConnectionTimeout(20000); // 20 seconds
+                    config.setIdleTimeout(60000);  // 60 seconds
+                    config.setMaxLifetime(14400000l);   // 4 hours
 
-                    config.setIdleTimeout(60000);       // 60 seconds
                     dataSource = new HikariDataSource(config);
                 }
             }
