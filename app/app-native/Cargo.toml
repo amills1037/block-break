@@ -1,0 +1,12 @@
+# app-native/Cargo.toml
+[package]
+name = "app-native"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy = { workspace = true }
+
+app-state = { workspace = true }
+game-loading = { workspace = true }
+terrain = { workspace = true }

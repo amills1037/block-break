@@ -1,18 +1,32 @@
-[package]
-name = "app"
+[workspace]
+resolver = "2"
+members = [
+    "app",
+    "app-native",
+    "app-state",
+    "game-loading",
+    "mesh-generator",
+    "noise",
+    "terrain",
+]
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-bevy = { version = "0.20.0" }
+[workspace.dependencies]
+bevy = "0.20.0"
 noise-functions = "0.8.5"
 rand = "0.10.1"
 rand_pcg = "0.10.2"
 wasm-bindgen = "0.2.123"
-getrandom = { version = "^0.4", features=["wasm_js"] }
+getrandom = { version = "^0.4", features = ["wasm_js"] }
 
-[lib]
-crate-type = ["cdylib"]
+app-state = { path = "app-state" }
+game-loading = { path = "game-loading" }
+mesh-generator = { path = "mesh-generator" }
+noise = { path = "noise" }
+terrain = { path = "terrain" }
 
 [profile.dev]
 opt-level = 1

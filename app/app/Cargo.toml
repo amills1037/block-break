@@ -1,0 +1,16 @@
+# app/Cargo.toml — replace current contents
+[package]
+name = "app"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bevy = { workspace = true }
+wasm-bindgen = { workspace = true }
+
+app-state = { workspace = true }
+game-loading = { workspace = true }
+terrain = { workspace = true }

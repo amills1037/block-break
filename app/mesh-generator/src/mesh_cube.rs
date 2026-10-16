@@ -1,4 +1,4 @@
-use crate::mesh_generator::voxel_mesh::VoxelMesh;
+use crate::voxel_mesh::VoxelMesh;
 
 #[allow(dead_code)]
 pub struct VoxelMeshCube {}

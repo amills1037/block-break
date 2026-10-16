@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use bevy::tasks::{AsyncComputeTaskPool, Task, futures_lite::future};
 
-use crate::terrain::voxel_terrain_generator::TerrainGenerator;
+use crate::voxel_terrain_generator::TerrainGenerator;
 
 use super::voxel_data::VoxelData;
 use super::voxel_terrain_generator::HeightMapTerrainGenerator;

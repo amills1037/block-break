@@ -1,0 +1,9 @@
+# terrain/Cargo.toml
+[package]
+name = "terrain"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy = { workspace = true }
+noise = { workspace = true }

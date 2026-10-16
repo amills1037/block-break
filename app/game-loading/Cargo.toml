@@ -1,0 +1,10 @@
+# game-loading/Cargo.toml
+[package]
+name = "game-loading"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy = { workspace = true }
+app-state = { workspace = true }
+terrain = { workspace = true }

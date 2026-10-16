@@ -1,5 +1,5 @@
-use crate::noise::noise_generator::NoiseGenerator;
-use crate::terrain::voxel_data::*;
+use crate::voxel_data::*;
+use noise::noise_generator::NoiseGenerator;
 
 pub trait TerrainGenerator {
     fn generate(&self, voxel_data: &mut VoxelData);

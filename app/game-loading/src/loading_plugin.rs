@@ -2,7 +2,8 @@ use bevy::prelude::*;
 // use bevy::tasks::{AsyncComputeTaskPool, Task, futures_lite::future};
 
 use super::load_chunks::load_chunks;
-use crate::{state::AppState, terrain::terrain_plugin::TerrainChunkGenerated};
+use app_state::AppState;
+use terrain::terrain_plugin::TerrainChunkGenerated;
 
 const MIN_LOADING_PROGRESS_TIME: f32 = 2.0; //to short and the progress bar with flash on fast systems
 
