@@ -17,9 +17,11 @@ interface StatsInterface {
     ref?: Ref<{ breakBlock: () => void }>;
     setCount: (c: number) => void;
     setName: (s: string) => void;
+    setConnected: (connected: boolean) => void;
+    setError: (s: string | null) => void;
 }
 
-function Stats({ ref, setCount, setName }: StatsInterface) {
+function Stats({ ref, setCount, setName, setConnected, setError }: StatsInterface) {
     //Use refence to prevent redraw when changed
     const sws = useRef<StatsWebSocket>(null!);
     useEffect(() => {
@@ -31,8 +33,22 @@ function Stats({ ref, setCount, setName }: StatsInterface) {
 
         const [url, name] = getWebSocketUrl(db);
         setName(name);
+
+        const connectCallback = () => {
+            setError(null);
+            setConnected(true);
+        };
+
+        const errorCallback = () => {
+            setError("Error");
+            setConnected(false);
+        };
+
         sws.current = new StatsWebSocket(
-            url, (c: number) => {
+            url,
+            connectCallback,
+            errorCallback,
+            (c: number) => {
                 setCount(c);
             }
         );
@@ -42,7 +58,7 @@ function Stats({ ref, setCount, setName }: StatsInterface) {
         return () => {
             sws.current?.disconnect();
         };
-    }, [setCount, setName]);
+    }, [setCount, setName, setConnected, setError]);
 
     //Code to allow a breakBlock function to be called outside the component.
     useImperativeHandle(ref, () => {

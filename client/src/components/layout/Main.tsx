@@ -5,11 +5,15 @@
 
 import BlockBreakApp from "@/components/BlockBreakApp";
 
-function Main() {
+interface MainInterface {
+    connected: boolean;
+}
+
+function Main({ connected }: MainInterface) {
     return (
         <main className="flex-1 relative bg-white dark:bg-gray-800 shadow-md ring ring-gray-900/5">
             <div className="px-3 py-4 absolute inset-0 size-full">
-                <BlockBreakApp />
+                { connected && <BlockBreakApp /> }
             </div>
         </main>
     );

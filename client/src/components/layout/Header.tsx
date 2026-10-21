@@ -3,12 +3,22 @@
  *
  */
 
-interface GlobalCount {
+interface HeaderInterface {
     globalCount: number;
     webSocketName: string;
+    error: string | null;
 }
 
-function Header({ globalCount, webSocketName }: GlobalCount) {
+function Header({ globalCount, webSocketName, error }: HeaderInterface) {
+    let count = (<span>{globalCount}</span>);
+    if (error) {
+      count = (
+        <span className="text-red-400 font-bold">
+            {error}
+        </span>
+      );
+    }
+
     return (
         <header className="px-3 py-4 flex gap-2 bg-teal-700 ring ring-gray-900">
             {/* "arrow" from https://fonts.google.com/icons arrow back */}
@@ -24,7 +34,7 @@ function Header({ globalCount, webSocketName }: GlobalCount) {
                 </svg>
             </a>
 
-            <h1 className="text-white">{ webSocketName } | Global Count {globalCount}</h1>
+            <h1 className="text-white">{webSocketName} | Global Count {count}</h1>
         </header>
     );
 }
