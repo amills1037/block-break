@@ -8,13 +8,15 @@ class StatsWebSockets {
 
     private webSocket: WebSocket | null;
 
-    private didOpen: boolean;
-
     private reconnect: boolean;
 
     private connectionCount: number;
 
     private socketUUID : string;
+
+    private connectCallback: () => void;
+
+    private errorCallback: (e: Event) => void;
 
     private setCountCallback: (count: number) => void;
 
@@ -25,12 +27,13 @@ class StatsWebSockets {
      * @param setCountCallback Callback to use when the WebSocket server updates the count
      */
 
-    public constructor(url: string, setCountCallback: (count: number) => void) {
+    public constructor(url: string, connectCallback: () => void, errorCallback: (e: Event) => void, setCountCallback: (count: number) => void) {
         this.url = url;
+        this.connectCallback = connectCallback;
+        this.errorCallback = errorCallback;
         this.setCountCallback = setCountCallback;
 
         this.webSocket = null;
-        this.didOpen = false;
         this.reconnect = true;
 
         this.connectionCount = 0;
@@ -53,16 +56,16 @@ class StatsWebSockets {
             this.webSocket = null;
         }
 
-        this.didOpen = false;
         this.webSocket = new WebSocket(this.url);
 
         //List for WebSocket open
         this.webSocket.addEventListener("open", (event: Event) => {
             console.log(this.socketUUID + ' open', event);
-            this.didOpen = true;
             //Once the connection is "open", send a connect action to the server so it will send response properly
             //This is mostly for AWS API Gateway.  Connect does not add to the sockets list, only action connect.
             this.webSocket?.send('{"action": "connect"}');
+
+            this.connectCallback();
         });
 
         //Listen for WebSocket messages
@@ -86,7 +89,7 @@ class StatsWebSockets {
 
             //recconect unless disconnect has been called
             if (this.reconnect) {
-                console.log(this.socketUUID + ' ' + from);
+                console.log(this.socketUUID + ' reconnect ' + from);
                 //reconnect to the websocket
                 this.connect();
             }
@@ -95,19 +98,27 @@ class StatsWebSockets {
         //Listen for WebSocket close
         this.webSocket.addEventListener("close", (event: CloseEvent) => {
             console.log(this.socketUUID + ' close', event);
-            //We should always call recoonect.  Reconnect will check if the socket should actually try and recoonect.
-            reconnect('close');
+            //We should always call reconnect.  Reconnect will check if the socket should actually try and recoonect.
+            //Reconnect after a random amount
+            const timeout = this.connectionCount < 6 ? this.connectionCount * 5 * Math.random() : 30 * Math.random();
+            const format = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 })
+            console.log(this.socketUUID + ' reconnect in ' + format.format(timeout));
+            setTimeout(() => {
+                reconnect('close');
+            }, timeout);
         });
 
         //Listen for WebSocket close
         this.webSocket.addEventListener("error", (event: Event) => {
             console.log(this.socketUUID + ' error', event);
+            this.errorCallback(event);
+
             //error event is mostly followed by close event
-            //if may not call close if the socket did not open
+            //it may not call close if the socket did not open
             //this edge case warrents further scrutiny
-            if (!this.didOpen) {
-                reconnect('error');
-            }
+            // if (!this.didOpen) {
+            //     reconnect('error');
+            // }
         });
     }
 
@@ -120,6 +131,11 @@ class StatsWebSockets {
         console.log(this.socketUUID + ' disconnect');
         //do not try to reconnect, we called disconnect, disconnect is permanent
         this.reconnect = false;
+
+        this.connectCallback = () => {};
+        this.errorCallback = () => {};
+        this.setCountCallback = () => {};
+
         this.webSocket?.close(); //noop if already closed
     }
 

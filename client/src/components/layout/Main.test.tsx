@@ -3,7 +3,7 @@ import Main from "./Main";
 
 describe("Main", () => {
     it("renders correctly", () => {
-        render(<Main />);
+        render(<Main connected={true} />);
 
         const canvas = document.querySelector('canvas');
         expect(canvas).toBeInTheDocument();

@@ -14,6 +14,8 @@ function App() {
 
     const [count, setCount] = useState(0);
     const [name, setName] = useState('');
+    const [error, setError] = useState<string|null>(null);
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         //interval to mock pressing a button inside the web assembply application
@@ -28,10 +30,10 @@ function App() {
 
     return (
         <>
-            <Stats ref={statsRef} setCount={setCount} setName={setName}/>
+            <Stats ref={statsRef} setCount={setCount} setName={setName} setConnected={setConnected} setError={setError} />
 
-            <Header webSocketName={name} globalCount={count} />
-            <Main />
+            <Header webSocketName={name} globalCount={count} error={error}  />
+            <Main connected={ connected } />
             <Footer />
         </>
     );

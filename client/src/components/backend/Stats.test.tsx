@@ -7,8 +7,10 @@ describe("Stats", () => {
 
         const setCount = () => {};
         const setName = () => {};
+        const setConnected = () => {};
+        const setError = () => {};
 
-        render(<Stats ref={ ref } setCount={ setCount } setName={ setName } />);
+        render(<Stats ref={ref} setCount={setCount} setName={setName} setConnected={ setConnected } setError={ setError } />);
         //Should not error
     });
 });
