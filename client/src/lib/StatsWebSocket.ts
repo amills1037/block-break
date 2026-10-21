@@ -99,9 +99,9 @@ class StatsWebSockets {
         this.webSocket.addEventListener("close", (event: CloseEvent) => {
             console.log(this.socketUUID + ' close', event);
             //We should always call reconnect.  Reconnect will check if the socket should actually try and recoonect.
-            //Reconnect after a random amount
-            const timeout = this.connectionCount < 6 ? this.connectionCount * 5 * Math.random() : 30 * Math.random();
-            const format = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 })
+            //Reconnect after a random amount, don't use raw 2^count, add jitter to prevent connections from reconnecting at the same time
+            const timeout = this.connectionCount < 6 ? Math.pow(2, (this.connectionCount-1)) * Math.random() * 1000 : 32000 * Math.random();
+            const format = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
             console.log(this.socketUUID + ' reconnect in ' + format.format(timeout));
             setTimeout(() => {
                 reconnect('close');
