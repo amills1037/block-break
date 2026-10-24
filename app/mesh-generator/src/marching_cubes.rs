@@ -1,16 +1,16 @@
 use bevy::prelude::*;
 
-use super::marching_cubes_const::*;
+use crate::marching_cubes_const::*;
 
-use super::MeshGenerator;
-use super::voxel_mesh::VoxelMesh;
+use crate::mesh_generator::MeshGenerator;
+use crate::voxel_chunk_mesh::VoxelChunkMesh;
 use terrain::voxel_data::{CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, VoxelData};
 
 #[allow(dead_code)]
 pub struct MarchingCubesMeshGenerator;
 
 impl MeshGenerator for MarchingCubesMeshGenerator {
-    fn generate_mesh(voxel_data: &VoxelData, voxel_mesh: &mut VoxelMesh) {
+    fn generate_mesh(voxel_data: &VoxelData, voxel_mesh: &mut VoxelChunkMesh) {
         let mut tri_count = 0;
 
         let mut corners: [Vec4; 8] = [Vec4::default(); 8];

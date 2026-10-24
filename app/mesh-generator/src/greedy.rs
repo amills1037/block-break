@@ -1,13 +1,13 @@
-use super::MeshGenerator;
-use super::mesh_cube::VoxelMeshCube;
-use super::voxel_mesh::VoxelMesh;
+use crate::mesh_cube::VoxelMeshCube;
+use crate::mesh_generator::MeshGenerator;
+use crate::voxel_chunk_mesh::VoxelChunkMesh;
 use terrain::voxel_data::{CHUNK_X_LENGTH, CHUNK_Y_LENGTH, CHUNK_Z_LENGTH, EMPTY_VOXEL, VoxelData};
 
 #[allow(dead_code)]
 pub struct GreedyMeshGenerator;
 
 impl MeshGenerator for GreedyMeshGenerator {
-    fn generate_mesh(voxel_data: &VoxelData, voxel_mesh: &mut VoxelMesh) {
+    fn generate_mesh(voxel_data: &VoxelData, voxel_mesh: &mut VoxelChunkMesh) {
         let mut x = 0;
         let mut y = 0;
         let mut z = 0;

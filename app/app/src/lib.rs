@@ -6,17 +6,11 @@
 
 use wasm_bindgen::prelude::*;
 
-use bevy::{
-    // diagnostic::{
-    //     EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin,
-    //     SystemInformationDiagnosticsPlugin,
-    // },
-    prelude::*,
-    window::WindowPlugin, // render::diagnostic::RenderDiagnosticsPlugin,
-};
+use bevy::prelude::*;
 
 use app_state::AppState;
 use game_loading::GameLoadingPlugin;
+use mesh_generator::MeshGeneratorPlugin;
 use terrain::TerrainPlugin;
 
 #[wasm_bindgen]
@@ -50,29 +44,14 @@ pub fn main(canvas_id: &str) {
         //Alchemy 3D specific code
         .init_state::<AppState>() //init_state needs to be called after DefaultPlugin
         .add_plugins(GameLoadingPlugin)
+        .add_plugins(MeshGeneratorPlugin)
         .add_plugins(TerrainPlugin)
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, setup_ambient_light))
         .run();
 }
 
 // /// set up a simple 3D scene
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    // circular base
-    commands.spawn((
-        Mesh3d(meshes.add(Circle::new(4.0))),
-        MeshMaterial3d(materials.add(Color::WHITE)),
-        Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
-    ));
-    // cube
-    // commands.spawn((
-    //     Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
-    //     MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
-    //     Transform::from_xyz(0.0, 0.5, 0.0),
-    // ));
+fn setup(mut commands: Commands) {
     // light
     commands.spawn((
         PointLight {
@@ -86,4 +65,8 @@ fn setup(
         Camera3d::default(),
         Transform::from_xyz(-20.5, 40.5, 90.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
+}
+
+fn setup_ambient_light(mut ambient_light: ResMut<GlobalAmbientLight>) {
+    ambient_light.brightness = 400.0;
 }

@@ -13,4 +13,5 @@ wasm-bindgen = { workspace = true }
 
 app-state = { workspace = true }
 game-loading = { workspace = true }
+mesh-generator = { workspace = true }
 terrain = { workspace = true }

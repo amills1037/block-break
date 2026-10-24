@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use super::load_chunks::load_chunks;
 use app_state::AppState;
-use terrain::terrain_plugin::TerrainChunkGenerated;
+use mesh_generator::mesh_generator_plugin::MeshGenerated;
 
 const MIN_LOADING_PROGRESS_TIME: f32 = 2.0; //to short and the progress bar with flash on fast systems
 
@@ -58,7 +58,7 @@ fn setup_loading_ui(mut commands: Commands) {
 }
 
 fn check_loading_progress(
-    chunks: Query<Entity, With<TerrainChunkGenerated>>,
+    chunks: Query<Entity, With<MeshGenerated>>,
     mut progress: ResMut<LoadingProgress>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {

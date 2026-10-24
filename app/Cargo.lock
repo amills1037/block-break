@@ -263,6 +263,7 @@ dependencies = [
  "app-state",
  "bevy",
  "game-loading",
+ "mesh-generator",
  "terrain",
  "wasm-bindgen",
 ]
@@ -274,6 +275,7 @@ dependencies = [
  "app-state",
  "bevy",
  "game-loading",
+ "mesh-generator",
  "terrain",
 ]
 
@@ -2857,6 +2859,7 @@ version = "0.1.0"
 dependencies = [
  "app-state",
  "bevy",
+ "mesh-generator",
  "terrain",
 ]
 
