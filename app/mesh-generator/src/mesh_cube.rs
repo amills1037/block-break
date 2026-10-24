@@ -1,11 +1,9 @@
-use crate::voxel_mesh::VoxelMesh;
+use crate::voxel_chunk_mesh::VoxelChunkMesh;
 
-#[allow(dead_code)]
 pub struct VoxelMeshCube {}
 
 impl VoxelMeshCube {
-    #[allow(dead_code)]
-    pub fn push_vertices(voxel_mesh: &mut VoxelMesh, position: [f32; 3]) {
+    pub fn push_vertices(voxel_mesh: &mut VoxelChunkMesh, position: [f32; 3]) {
         let x_pos = 0.5 + position[0];
         let y_pos = 0.5 + position[1];
         let z_pos = 0.5 + position[2];
@@ -21,7 +19,7 @@ impl VoxelMeshCube {
 
     #[allow(dead_code)]
     pub fn push_vertices_with_length(
-        voxel_mesh: &mut VoxelMesh,
+        voxel_mesh: &mut VoxelChunkMesh,
         position: [f32; 3],
         lengths: [f32; 3],
     ) {
@@ -43,7 +41,7 @@ impl VoxelMeshCube {
     }
 
     pub fn push_vertices_with_positions(
-        voxel_mesh: &mut VoxelMesh,
+        voxel_mesh: &mut VoxelChunkMesh,
         x_pos: f32,
         y_pos: f32,
         z_pos: f32,
@@ -89,7 +87,7 @@ impl VoxelMeshCube {
     }
 
     #[allow(dead_code)]
-    pub fn push_triangles(voxel_mesh: &mut VoxelMesh, offset: u32) {
+    pub fn push_triangles(voxel_mesh: &mut VoxelChunkMesh, offset: u32) {
         // face 1
         voxel_mesh.push_triangles([offset, 1 + offset, 2 + offset]);
         voxel_mesh.push_triangles([2 + offset, 3 + offset, offset]);
@@ -116,7 +114,7 @@ impl VoxelMeshCube {
     }
 
     #[allow(dead_code)]
-    pub fn push_normals(voxel_mesh: &mut VoxelMesh) {
+    pub fn push_normals(voxel_mesh: &mut VoxelChunkMesh) {
         //face 1, xy
         voxel_mesh.push_normals([0., 0., -1.]);
         voxel_mesh.push_normals([0., 0., -1.]);
@@ -155,7 +153,7 @@ impl VoxelMeshCube {
     }
 
     #[allow(dead_code)]
-    pub fn push_uvs(voxel_mesh: &mut VoxelMesh) {
+    pub fn push_uvs(voxel_mesh: &mut VoxelChunkMesh) {
         for _ in 0..6 {
             voxel_mesh.push_uvs([0., 0.]);
             voxel_mesh.push_uvs([1., 1.]);

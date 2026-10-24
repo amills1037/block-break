@@ -1,23 +1,29 @@
-pub struct VoxelMesh {
+pub struct VoxelChunkMesh {
     pub vertices: Vec<[f32; 3]>,
     pub triangles: Vec<u32>,
     pub normals: Vec<[f32; 3]>,
     pub uvs: Vec<[f32; 2]>,
+
+    pub x_coord: i32,
+    pub y_coord: i32,
+    pub z_coord: i32,
 }
 
-impl VoxelMesh {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
-        VoxelMesh {
-            vertices: Vec::with_capacity(324000),
-            triangles: Vec::with_capacity(486000),
-            normals: Vec::with_capacity(324000),
-            uvs: Vec::with_capacity(324000),
+impl VoxelChunkMesh {
+    pub fn new(x: i32, y: i32, z: i32) -> Self {
+        VoxelChunkMesh {
+            vertices: Vec::with_capacity(324_000),
+            triangles: Vec::with_capacity(486_000),
+            normals: Vec::with_capacity(324_000),
+            uvs: Vec::with_capacity(324_000),
+            x_coord: x,
+            y_coord: y,
+            z_coord: z,
         }
     }
 }
 
-impl VoxelMesh {
+impl VoxelChunkMesh {
     pub fn push_vertex(&mut self, vertex: [f32; 3]) {
         self.vertices.push(vertex);
     }

@@ -5,6 +5,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-bevy = { workspace = true }
 app-state = { workspace = true }
+bevy = { workspace = true }
+mesh-generator = { workspace = true }
 terrain = { workspace = true }

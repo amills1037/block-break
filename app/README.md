@@ -15,5 +15,5 @@ cargo install wasm-pack
 ## Build
 
 ```
-wasm-pack build --target web
+wasm-pack build ./app --target web
 ```
