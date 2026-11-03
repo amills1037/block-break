@@ -34,7 +34,7 @@ spec:
               - key: node-type
                 operator: In
                 values:
-                - server
+                - cluster
       containers:
         - name: mongodb
           image: mongo:8.2
@@ -67,6 +67,11 @@ spec:
         - name: mongodb-storage
           persistentVolumeClaim:
             claimName: mongodb-storage-pvc
+      tolerations:
+        - key: "server"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: PersistentVolume

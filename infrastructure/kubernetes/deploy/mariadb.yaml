@@ -34,7 +34,7 @@ spec:
               - key: node-type
                 operator: In
                 values:
-                - server
+                - cluster
       containers:
         - name: mariadb
           image: mariadb:12.3
@@ -62,6 +62,11 @@ spec:
         - name: mariadb-storage
           persistentVolumeClaim:
             claimName: mariadb-storage-pvc
+      tolerations:
+        - key: "server"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: PersistentVolume

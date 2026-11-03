@@ -52,7 +52,7 @@ jobs:
     needs:
       - test-server
       - build-server
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -92,6 +92,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false # Disable provenance to avoid unknown/unknown
+          sbom: false       # Disable sbom to avoid unknown/unknown
 
       - name: Generate artifact attestation
         uses: actions/attest@v4
@@ -133,7 +135,7 @@ jobs:
   deploy-staging-server:
     name: Deploy staging server
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     environment: Staging
     steps:
       - name: Checkout code
@@ -196,7 +198,7 @@ jobs:
     name: Deploy production server
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     needs: deploy-staging-server
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04-arm
     environment: Production
     steps:
       - name: Checkout code
