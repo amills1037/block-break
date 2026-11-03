@@ -20,7 +20,7 @@ export function getWebSocketUrl(db: string | null): [string, string] {
         ['wss://socket.serverblockbreak.ca:443/error', 'Server/Error']
     ];
 
-    const r = Math.floor(Math.random() * urls.length);
+    const r = Math.floor(Math.random() * (urls.length - 1)); //length -1 because we don't want to randomly pick error
 
     switch (db) {
         case '0':
