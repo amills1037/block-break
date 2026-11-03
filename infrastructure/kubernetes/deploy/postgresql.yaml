@@ -34,7 +34,7 @@ spec:
               - key: node-type
                 operator: In
                 values:
-                - server
+                - cluster
       containers:
         - name: postgresql
           image: postgres:18.4
@@ -62,6 +62,11 @@ spec:
         - name: postgresql-storage
           persistentVolumeClaim:
             claimName: postgresql-storage-pvc
+      tolerations:
+        - key: "server"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: PersistentVolume
