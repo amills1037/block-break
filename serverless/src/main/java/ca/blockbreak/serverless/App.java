@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.apigatewaymanagementapi.model.PostToConne
 
 /**
  * WebSocket app implementation
- * Implements Lambda function handler
+ * Implements Java Lambda function handler
  *
  */
 public class App

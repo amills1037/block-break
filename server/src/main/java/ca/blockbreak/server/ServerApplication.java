@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * ServerApplication implementation.
+ * Java ServerApplication implementation.
  */
 @SpringBootApplication
 public class ServerApplication {
